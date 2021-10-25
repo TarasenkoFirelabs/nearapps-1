@@ -91,6 +91,12 @@ impl NearApps {
         }
     }
 
+    pub fn print_required_tags(self) {
+        for tag in self.required_tags.iter() {
+            env::log_str(&tag);
+        }
+    }
+
     #[private]
     pub fn add_contract(&mut self, contract_name: AccountId) {
         self.approved_contracts.insert(&contract_name);
@@ -107,12 +113,18 @@ impl NearApps {
     }
 
     #[private]
-    pub fn any_tags_allowed(&mut self, any: bool) {
-        self.any_tags = any;
+    pub fn add_tag(&mut self, tag_name: String) {
+        self.required_tags.insert(&tag_name);
     }
 
-    pub fn print_required_tags(self) {
+    #[private]
+    pub fn remove_tag(&mut self, tag_name: String) {
+        self.required_tags.remove(&tag_name);
+    }
 
+    #[private]
+    pub fn any_tags_allowed(&mut self, any: bool) {
+        self.any_tags = any;
     }
 
     #[private]
