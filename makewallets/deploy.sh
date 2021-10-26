@@ -1,0 +1,1 @@
+near deploy adsick.testnet ./res/make_wallets.wasm
