@@ -44,7 +44,7 @@ impl Default for NearApps {
     fn default() -> Self {
         let mut required_tags = UnorderedSet::new(b"t");
         required_tags.insert(&"person".to_string());
-        required_tags.insert(&"organisation".to_string());
+        required_tags.insert(&"company".to_string());
         required_tags.insert(&"purpose".to_string());
         Self {
             any_contracts: false,

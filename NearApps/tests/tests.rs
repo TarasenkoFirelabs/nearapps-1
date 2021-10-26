@@ -59,7 +59,7 @@ fn simulate_successful_call() {
 
     let mut map = HashMap::new();
     map.insert("person".to_string(), "Mike".to_string());
-    map.insert("organisation".to_string(), "Near.org".to_string());
+    map.insert("company".to_string(), "Near.org".to_string());
     map.insert("purpose".to_string(), "testing123".to_string());
     let arr = vec![map];
     let res = call!(
@@ -100,7 +100,7 @@ fn simulate_fail_call() {
 
     let mut map = HashMap::new();
     map.insert("person".to_string(), "Mike".to_string());
-    map.insert("organisation".to_string(), "Near.org".to_string());
+    map.insert("company".to_string(), "Near.org".to_string());
     //map.insert("purpose".to_string(), "testing123".to_string()); // missing key
     let arr = vec![map];
     let res = call!(
