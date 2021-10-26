@@ -136,7 +136,8 @@ impl NearApps {
     }
 
     pub fn print_required_tags(self) {
-        env::log_str(&(format!("{:?}", self.required_tags.iter().collect::<Vec<String>>())));
+        let s = format!("{:?}", self.required_tags.iter().collect::<Vec<String>>());
+        env::log_str(&s[1..s.len()]);
     }
 
     pub fn add_contract(&mut self, contract_name: AccountId) {
