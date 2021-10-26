@@ -16,6 +16,22 @@ pub struct NearApps {
     required_tags: UnorderedSet<String>,
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct ContractArgs {
+    function_name: String,
+    params: String,
+}
+
+impl ContractArgs {
+    pub fn new(function_name: String, params: String) -> Self {
+        Self {
+            function_name,
+            params,
+        }
+    }
+}
+
 pub trait Ownable {
     fn assert_owner(&self) {
         assert_eq!(
@@ -56,22 +72,6 @@ impl Default for NearApps {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct ContractArgs {
-    function_name: String,
-    params: String,
-}
-
-impl ContractArgs {
-    pub fn new(function_name: String, params: String) -> Self {
-        Self {
-            function_name,
-            params,
-        }
-    }
-}
-
 #[near_bindgen]
 impl NearApps {
     #[init]
@@ -94,29 +94,27 @@ impl NearApps {
         args: ContractArgs,
     ) {
         self.verify_tags(&tags);
-        if self.verify_contract(&contract_name) {
-            let p0 = env::promise_create(
-                contract_name,
-                &args.function_name,
-                &args.params.into_bytes(),
-                0,
-                env::prepaid_gas() / 3,
-            );
-            env::promise_then(
-                p0,
-                env::current_account_id(),
-                "check_promise",
-                json!({ "tags": tags }).to_string().as_bytes(),
-                0,
-                env::prepaid_gas() / 3,
-            );
-        }
+        self.verify_contract(&contract_name);
+        let p0 = env::promise_create(
+            contract_name,
+            &args.function_name,
+            &args.params.into_bytes(),
+            0,
+            env::prepaid_gas() / 3,
+        );
+        env::promise_then(
+            p0,
+            env::current_account_id(),
+            "check_promise",
+            json!({ "tags": tags }).to_string().as_bytes(),
+            0,
+            env::prepaid_gas() / 3,
+        );
     }
 
-    fn verify_contract(&self, contract_name: &AccountId) -> bool {
-        match self.any_contracts {
-            true => true,
-            false => self.approved_contracts.contains(contract_name),
+    fn verify_contract(&self, contract_name: &AccountId) {
+        if !self.any_contracts && !self.approved_contracts.contains(contract_name) {
+            env::panic_str("missing allowed contract");
         }
     }
 
