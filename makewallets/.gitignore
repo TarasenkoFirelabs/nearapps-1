@@ -18,3 +18,4 @@ neardev
 
 # Dependencies
 node_modules
+.rustc_info.json
