@@ -75,14 +75,16 @@ impl Default for NearApps {
 #[near_bindgen]
 impl NearApps {
     #[init]
-    pub fn new(owner_id: AccountId, tags: Vec<String>) -> Self {
+    pub fn new(owner_id: AccountId, init_tags: Vec<String>, init_contracts: Vec<AccountId>) -> Self {
         let mut required_tags = UnorderedSet::new(b"t");
-        required_tags.extend(tags);
+        required_tags.extend(init_tags);
+        let mut approved_contracts = LookupSet::new(b"c");
+        approved_contracts.extend(init_contracts);
         Self {
             any_contracts: false,
             any_tags: false,
             owner_id,
-            approved_contracts: LookupSet::new(b"c"),
+            approved_contracts,
             required_tags,
         }
     }
