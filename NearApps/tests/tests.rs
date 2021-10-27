@@ -59,14 +59,13 @@ fn simulate_successful_call() {
 
     let mut map = HashMap::new();
     map.insert("person".to_string(), "Mike".to_string());
-    map.insert("organisation".to_string(), "Near.org".to_string());
+    map.insert("company".to_string(), "Near.org".to_string());
     map.insert("purpose".to_string(), "testing123".to_string());
     let arr = vec![map];
     let res = call!(
         master_account,
         near_apps.call(
-            arr
-            ,
+            arr,
             status_id.clone(),
             ContractArgs::new("set_status".to_string(), message.to_string())
         ),
@@ -82,31 +81,36 @@ fn simulate_fail_call() {
     let status_id: near_sdk::AccountId = "status".parse().unwrap();
     let status_amt = to_yocto("35");
     let message = "{\"message\": \"hello world\"}";
-    let res = call!(
+    call!(
         near_apps.user_account,
         near_apps.add_contract(status_id.clone()),
         gas = DEFAULT_GAS
     );
-    println!("SIMPLE CALL: {:#?}", res.promise_results());
 
-    let res = view!(near_apps.print_required_tags());
-    println!("Required tags: {:#?}", res.logs());
-
-    let mut map = HashMap::new();
-    map.insert("person".to_string(), "Mike".to_string());
-    map.insert("organisation".to_string(), "Near.org".to_string());
-    //map.insert("purpose".to_string(), "testing123".to_string()); // missing key
-    let arr = vec![map];
     let res = call!(
         master_account,
         near_apps.call(
-            arr
-            ,
+            Vec::new(),
             status_id.clone(),
             ContractArgs::new("set_status".to_string(), message.to_string())
         ),
         gas = DEFAULT_GAS * 3
     );
-    println!("COMPLEX CALL: {:#?}", res.promise_results());
+    assert!(!res.is_ok());
+
+    let mut map = HashMap::new();
+    map.insert("person".to_string(), "Mike".to_string());
+    map.insert("company".to_string(), "Near.org".to_string());
+    //map.insert("purpose".to_string(), "testing123".to_string()); // missing key
+    let arr = vec![map];
+    let res = call!(
+        master_account,
+        near_apps.call(
+            arr,
+            status_id.clone(),
+            ContractArgs::new("set_status".to_string(), message.to_string())
+        ),
+        gas = DEFAULT_GAS * 3
+    );
     assert!(!res.is_ok());
 }
