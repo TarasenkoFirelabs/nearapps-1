@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/nino/projects/LogAnalytics/nearapps/LogAnalytics/target/debug/build/typenum-d4d30414963dfba2/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/Users/nino/projects/LogAnalytics/nearapps/LogAnalytics/target/debug/build/typenum-d4d30414963dfba2/out/op.rs
