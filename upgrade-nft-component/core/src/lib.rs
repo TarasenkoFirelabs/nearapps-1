@@ -38,7 +38,6 @@ pub struct AirdropReward {
     account_id: AccountId,
     amount: Balance,
 }
-
 pub trait NftEngine{
    fn airdrop(&mut self, rewards: AirdropRewards);
 }

@@ -3,6 +3,6 @@ mod locking;
 mod minting;
 mod upgrade;
 mod appcontract;
-mod core;
+extern crate core;
 
-
+use core::*;
