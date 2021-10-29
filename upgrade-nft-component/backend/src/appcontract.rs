@@ -1,3 +1,6 @@
+use crate::series::NftSeriesSale;
+use crate::series::NftSeriesId;
+use crate::common::{StorageKey};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_contract_standards::non_fungible_token::metadata::NFT_METADATA_SPEC;
@@ -24,6 +27,7 @@ use near_sdk::{
     PromiseOrValue, PromiseResult,
 };
 
+near_sdk::setup_alloc!();
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -31,10 +35,9 @@ pub struct AppContract {
     tokens: NonFungibleToken,
     owner_id: ValidAccountId,
     metadata: LazyOption<NFTContractMetadata>,
-
     pending_nft_rewards: LookupMap<AccountId, Balance>,
-
-    token_series_by_id: UnorderedMap<NftSeriesId,NftSeriesSale>,
+    
+    pub series: NftSeriesSale,
 }
 
 
@@ -42,6 +45,7 @@ pub struct AppContract {
 trait ExtNearApps {
     fn call(tags: String, contract_name: ValidAccountId, contract_inputs: String);
 }
+
 
 #[near_bindgen]
 impl AppContract {
@@ -75,19 +79,34 @@ impl AppContract {
             ),
             owner_id,
             pending_nft_rewards: LookupMap::new(b"r"),
-            token_series_by_id: UnorderedMap::new(StorageKey::TokenSeriesById),
+            series:NftSeriesSale::new(),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
         }
     }
 
-    near_contract_standards::impl_fungible_token_core!(Contract, token);
-    near_contract_standards::impl_fungible_token_storage!(Contract, token);
+
     pub fn call_near_apps(time: U128, tags: String) { //  wallet: ValidAccountId ? or we just get predecessor/signer account_id
         if check_correct_time(time.0 as u64) && wallet_contains_correct_nft(env::predecessor_account_id()) {
             //ext_nearapps::call(tags, ValidAccountId::try_from("contract.name").unwrap(), "contract_inputs".to_string(), &env::current_account_id(), 0, env::prepaid_gas() / 3);
         }
     }
 
+    #[payable]
+    pub fn refund_deposit(&mut self,storage_used: u64, extra_spend: Balance) {
+        let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
+        let attached_depo = env::attached_deposit() - extra_spend;
+
+        assert!(
+            required_cost <= attached_depo,
+            "Must attach {} some yocto to cover storage",
+            required_cost,
+        );
+
+        let refund = attached_depo - required_cost;
+        if refund > 1 {
+            Promise::new(env::predecessor_account_id()).transfer(refund);
+        }
+    }
 }
 
 fn check_correct_time(time: u64) -> bool {
