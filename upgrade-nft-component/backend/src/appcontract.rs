@@ -54,8 +54,8 @@ impl AppContract {
             owner_id,
             NFTContractMetadata {
                 spec: NFT_METADATA_SPEC.to_string(),
-                name: "Comic by Paras".to_string(),
-                symbol: "COMIC".to_string(),
+                name: "Upgrade NFT component".to_string(),
+                symbol: "UPNFTCOMP".to_string(),
                 icon: None,
                 base_uri: Some("https://ipfs.fleek.co/ipfs".to_string()),
                 reference: None,
