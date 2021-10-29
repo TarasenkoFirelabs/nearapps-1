@@ -46,6 +46,7 @@ const App = ({ account, contract, currentUser, nearConfig, wallet }) => {
 
           let link = `https://explorer.${nearConfig.networkId}.near.org/transactions/${txid}`;
           alert.show(link);
+          console.log('-----');
         })
 
     } catch(error) {
