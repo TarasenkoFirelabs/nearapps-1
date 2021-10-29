@@ -40,10 +40,7 @@ async function initContract() {
     sender: walletConnection.getAccountId()
   });
 
-  let account;
-  if(walletConnection.getAccountId()) {
-    account = await near.account(currentUser.accountId);
-  }
+  const account = await near.account(currentUser.accountId);
 
   return { account, contract, currentUser, nearConfig, walletConnection };
 }
@@ -67,7 +64,7 @@ window.nearInitPromise = initContract()
     )
     
     const Root = () => (
-      <AlertProvider template={AlertTemplate} {...options}>
+      <AlertProvider template={AlertTemplate} options={options}>
       <App
         account={account}
         contract={contract}
