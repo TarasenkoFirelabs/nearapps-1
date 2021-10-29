@@ -1,10 +1,14 @@
 import 'regenerator-runtime/runtime';
 import React, { useState, useEffect } from 'react';
+import { useAlert } from 'react-alert'
 import PropTypes from 'prop-types';
 import Form from './components/Form';
 import SignIn from './components/SignIn';
+import callContract from './utils/CallContract';
 
-const App = ({ contract, currentUser, nearConfig, wallet }) => {
+const App = ({ account, contract, currentUser, nearConfig, wallet }) => {
+  const alert = useAlert();
+
   let initData = {
       app_id: 'Example App Log',
       action_id: 'Example Action Log',
@@ -15,8 +19,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    // TODO: don't just fetch once; subscribe!
-    contract.get_analytics().then(setAnalytics)
+    // 
   }, []);
 
   function encode_utf8_base64(str) {
@@ -30,17 +33,24 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
   }
 
   const onSubmit = (formData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    // TODO: optimistically update page with new message,
-    // update blockchain data in background
-    // add uuid to each message, so we know which one is already known
-    contract.set_analytics(
-      {"encoded": encode64( formData )}
-    ).then(() => {
-      contract.get_analytics().then(setAnalytics);
-      setIsSubmitting(false)
-    });
+    // either you can call `contract.log_analytics(args);`
+    // but this will not return TransactionId, cause doesn't specified in contract `contract\src\lib.rs`
+
+    try {
+      const args = {"encoded": encode64( formData )};
+      callContract(account, nearConfig, 'log_analytics', args)
+        .then((txid) => {
+          setIsSubmitting(false)
+
+          let link = `https://explorer.${nearConfig.networkId}.near.org/transactions/${txid}`;
+          alert.show(link);
+        })
+
+    } catch(error) {
+      alert.error(error);
+    }
   };
 
   const signIn = () => {
@@ -74,8 +84,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
 
 App.propTypes = {
   contract: PropTypes.shape({
-    set_analytics: PropTypes.func.isRequired,
-    get_analytics: PropTypes.func.isRequired
+    log_analytics: PropTypes.func.isRequired
   }).isRequired,
   currentUser: PropTypes.shape({
     accountId: PropTypes.string.isRequired,
