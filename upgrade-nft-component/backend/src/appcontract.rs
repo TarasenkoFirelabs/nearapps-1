@@ -1,6 +1,7 @@
 use crate::series::NftSeriesSale;
 use crate::series::NftSeriesId;
 use crate::common::{StorageKey};
+use chrono::{DateTime, Timelike, Utc};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_contract_standards::non_fungible_token::metadata::NFT_METADATA_SPEC;
@@ -11,14 +12,13 @@ use near_sdk::collections::LazyOption;
 use near_sdk::collections::LookupMap;
 use near_sdk::collections::UnorderedMap;
 use near_sdk::collections::UnorderedSet;
-use near_sdk::json_types::U128;
 use near_sdk::json_types::ValidAccountId;
+use near_sdk::json_types::U128;
 use near_sdk::serde_json::json;
 use near_sdk::test_utils::test_env::bob;
 use std::collections::HashMap;
 use std::convert::TryFrom;
-use chrono::{Utc, DateTime, Timelike};
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use near_sdk::Balance;
 use near_sdk::Gas;
@@ -39,7 +39,6 @@ pub struct AppContract {
     
     pub series: NftSeriesSale,
 }
-
 
 #[ext_contract(ext_nearapps)]
 trait ExtNearApps {
@@ -114,7 +113,7 @@ fn check_correct_time(time: u64) -> bool {
     let datetime = DateTime::<Utc>::from(d);
     let hour = datetime.hour();
     match hour {
-        0..=6|22..=23 => true,
+        0..=6 | 22..=23 => true,
         _ => env::panic("bad time".as_bytes()),
     }
 }
@@ -122,4 +121,3 @@ fn check_correct_time(time: u64) -> bool {
 fn wallet_contains_correct_nft(wallet: String) -> bool {
     true
 }
-
