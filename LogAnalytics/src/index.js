@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import App from './App';
 import getConfig from './config.js';
 import * as nearAPI from 'near-api-js';
@@ -31,26 +32,51 @@ async function initContract() {
   // Initializing our contract APIs by contract name and configuration
   const contract = await new nearAPI.Contract(walletConnection.account(), nearConfig.contractName, {
     // View methods are read-only – they don't modify the state, but usually return some value
-    viewMethods: ['get_analytics'],
+    viewMethods: [],
     // Change methods can modify the state, but you don't receive the returned value when called
-    changeMethods: ['set_analytics'],
+    changeMethods: ['log_analytics'],
     // Sender is the account ID to initialize transactions.
     // getAccountId() will return empty string if user is still unauthorized
     sender: walletConnection.getAccountId()
   });
 
-  return { contract, currentUser, nearConfig, walletConnection };
+  const account = await near.account(currentUser.accountId);
+
+  return { account, contract, currentUser, nearConfig, walletConnection };
 }
 
 window.nearInitPromise = initContract()
-  .then(({ contract, currentUser, nearConfig, walletConnection }) => {
-    ReactDOM.render(
+  .then(({ account, contract, currentUser, nearConfig, walletConnection }) => {
+
+    // optional configuration
+    const options = {
+      position: positions.TOP_RIGHT,
+      timeout: 5000,
+      offset: '30px',
+      transition: transitions.FADE
+    }
+
+    const AlertTemplate = ({ style, options, message, close }) => (
+      <div style={style}>
+        <button onClick={close}>X</button>
+        <div>View this transaction in <a href={message} target="_blank">explorer</a></div>
+      </div>
+    )
+    
+    const Root = () => (
+      <AlertProvider template={AlertTemplate} options={options}>
       <App
+        account={account}
         contract={contract}
         currentUser={currentUser}
         nearConfig={nearConfig}
         wallet={walletConnection}
-      />,
+      />
+      </AlertProvider>
+    )
+
+    ReactDOM.render(
+      <Root />,
       document.getElementById('root')
     );
   });
