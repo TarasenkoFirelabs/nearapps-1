@@ -1,25 +1,23 @@
-
-use near_sdk::{Balance,AccountId};
-use std::collections::HashMap;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
+use near_sdk::{AccountId, Balance};
+use std::collections::HashMap;
 
 pub type NftSeriesId = String;
-
-
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct NftSeries {
     series_id: NftSeriesId,
-	metadata: TokenMetadata,
-	creator_id: AccountId,
-	tokens: UnorderedSet<TokenId>,
+    metadata: TokenMetadata,
+    creator_id: AccountId,
+    tokens: UnorderedSet<TokenId>,
     price: Option<Balance>,
     is_mintable: bool,
     royalty: HashMap<AccountId, u32>,
-    closed:bool,
+    closed: bool,
 }
-pub trait NftSeriesProvider{
+
+pub trait NftSeriesProvider {
     fn nft_create_series(
         &mut self,
         token_metadata: TokenMetadata,
@@ -28,15 +26,11 @@ pub trait NftSeriesProvider{
     ) -> NftSeries;
 }
 
-
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct NftSeriesSale {
-    token_series_by_id: UnorderedMap<NftSeriesId,NftSeriesSale>,
+    token_series_by_id: UnorderedMap<NftSeriesId, NftSeriesSale>,
 }
-
-
-
 
 // impl AppContract {
 //     pub fn nft_create_series(
@@ -47,7 +41,7 @@ pub struct NftSeriesSale {
 //     ) -> NftSeries{
 //      NftSeries{
 //          tokens,
-         
+
 //      }
 //     }
 // }
