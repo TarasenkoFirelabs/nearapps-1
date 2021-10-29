@@ -5,7 +5,7 @@ use near_sdk::serde::Serialize;
 use near_sdk::{env, near_bindgen};
 
 extern crate base64;
-use base64::{decode};
+use base64::decode;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, Default, Serialize)]
@@ -15,25 +15,20 @@ pub struct Call {}
 impl Call {
     pub fn log_analytics(encoded: String) {
         let call_encoded: Vec<&str> = encoded.split('_').collect();
-        let app_id_encoded = call_encoded[0];
-        let app_id = str::from_utf8(&decode(app_id_encoded).unwrap()[..])
-            .unwrap()
-            .to_string();
-        let action_id_encoded = call_encoded[1];
-        let action_id = str::from_utf8(&decode(action_id_encoded).unwrap()[..])
-            .unwrap()
-            .to_string();
-        let user_name_encoded = call_encoded[2];
-        let user_name = str::from_utf8(&decode(user_name_encoded).unwrap()[..])
-            .unwrap()
-            .to_string();
-
+        let mut call_decoded: Vec<String> = Vec::new();
+        for i in 0..3 {
+            let decoded = str::from_utf8(&decode(call_encoded[i]).unwrap())
+                .unwrap()
+                .to_string();
+            call_decoded.push(decoded);
+        }
         env::log_str(&format!(
             "app_id: {}, action_id: {}, user_name: {}",
-            app_id, action_id, user_name
+            call_decoded[0], call_decoded[1], call_decoded[2]
         ));
     }
 }
+
 /*
  * the rest of this file sets up unit tests
  * to run these, the command will be:
