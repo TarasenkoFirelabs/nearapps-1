@@ -10,5 +10,5 @@ edition = "2018"
 near-sdk = "3.1.0"
 near-contract-standards = "3.1.1"
 
-[dependencies.core]
-path = "../core"
+[dependencies.common]
+path = "../common"

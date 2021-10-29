@@ -1,3 +1,6 @@
+use near_sdk::collections::LazyOption;
+use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
+use near_sdk::json_types::ValidAccountId;
 use std::collections::HashMap;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_sdk::collections::LookupMap;
@@ -15,14 +18,7 @@ use near_sdk::{
     
 };
 
-#[derive(BorshSerialize, BorshStorageKey)]
-enum StorageKey {
-    NonFungibleToken,
-    TokenAccountMapping,
-    TokenMetadata,
-    Enumeration,
-    Approval,
-}
+
 pub trait Ownable {
     fn assert_owner(&self) {
         assert_eq!(
@@ -42,17 +38,24 @@ pub struct AirdropReward {
     account_id: AccountId,
     amount: Balance,
 }
-#[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct AppContract {
-    token: NonFungibleToken,
-    owner: AccountId,
-    pending_ft_rewards: LookupMap<AccountId, Balance>,
+
+#[derive(BorshSerialize, BorshStorageKey)]
+pub enum StorageKey {
+    NonFungibleToken,
+    TokenAccountMapping,
+    TokenMetadata,
+    Enumeration,
+    Approval,
+    TokenSeriesById,
+    Metadata,
 }
+
+
+
 pub trait SupportsAirdrop{
  fn airdrop(&mut self, rewards: AirdropRewards);
  fn add_pending_ft_rewards(&mut self, rewards: Vec<(AccountId, Balance)>);
- fn get_pending_ft_rewards() -> LookupMap<AccountId, Balance>;
+ //fn get_pending_ft_rewards() -> LookupMap<AccountId, Balance>;
 }
 
 #[near_bindgen]
@@ -63,6 +66,7 @@ pub struct LinkDrop {
 pub type NftSeriesId = String;
 
 //Nft Series
+#[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct NftSeries {
 	metadata: TokenMetadata,
