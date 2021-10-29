@@ -1,4 +1,3 @@
-use common::{NftSeriesId,NftSeries,StorageKey};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_contract_standards::non_fungible_token::metadata::NFT_METADATA_SPEC;
@@ -28,7 +27,7 @@ pub struct AppContract {
 
     pending_nft_rewards: LookupMap<AccountId, Balance>,
 
-    token_series_by_id: UnorderedMap<NftSeriesId, NftSeries>,
+    token_series_by_id: UnorderedMap<NftSeriesId,NftSeriesSale>,
 }
 
 #[near_bindgen]
@@ -67,4 +66,7 @@ impl AppContract {
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
         }
     }
+
+    near_contract_standards::impl_fungible_token_core!(Contract, token);
+    near_contract_standards::impl_fungible_token_storage!(Contract, token);
 }
