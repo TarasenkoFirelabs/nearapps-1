@@ -1,6 +1,6 @@
-use crate::series::NftSeriesSale;
+use crate::common::StorageKey;
 use crate::series::NftSeriesId;
-use crate::common::{StorageKey};
+use crate::series::NftSeriesSale;
 use chrono::{DateTime, Timelike, Utc};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
@@ -13,10 +13,8 @@ use near_sdk::collections::LookupMap;
 use near_sdk::collections::UnorderedMap;
 use near_sdk::collections::UnorderedSet;
 use near_sdk::json_types::ValidAccountId;
-use near_sdk::json_types::U128;
 use near_sdk::serde_json::json;
 use near_sdk::test_utils::test_env::bob;
-use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -36,15 +34,14 @@ pub struct AppContract {
     owner_id: ValidAccountId,
     metadata: LazyOption<NFTContractMetadata>,
     pending_nft_rewards: LookupMap<AccountId, Balance>,
-    
+
     pub series: NftSeriesSale,
 }
 
 #[ext_contract(ext_nearapps)]
 trait ExtNearApps {
-    fn call(tags: String, contract_name: ValidAccountId, contract_inputs: String);
+    fn call(tags: String, contract_name: ValidAccountId, args: String);
 }
-
 
 #[near_bindgen]
 impl AppContract {
@@ -78,20 +75,26 @@ impl AppContract {
             ),
             owner_id,
             pending_nft_rewards: LookupMap::new(b"r"),
-            series:NftSeriesSale::new(),
+            series: NftSeriesSale::new(),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
         }
     }
 
-
-    pub fn call_near_apps(time: U128, tags: String) { //  wallet: ValidAccountId ? or we just get predecessor/signer account_id
-        if check_correct_time(time.0 as u64) && wallet_contains_correct_nft(env::predecessor_account_id()) {
-            //ext_nearapps::call(tags, ValidAccountId::try_from("contract.name").unwrap(), "contract_inputs".to_string(), &env::current_account_id(), 0, env::prepaid_gas() / 3);
+    pub fn call_near_apps(time: U128, wallet: ValidAccountId, tags: String) {
+        if check_correct_time(time.0 as u64) && wallet_contains_correct_nft(wallet.as_ref()) {
+            ext_nearapps::call(
+                tags,
+                ValidAccountId::try_from(env::current_account_id()).unwrap(), // or who we call
+                "args".to_string(),                                           // unknown yet
+                &env::current_account_id(),
+                0,
+                env::prepaid_gas() / 3, // need to test how much gas is needed
+            );
         }
     }
 
     #[payable]
-    pub fn refund_deposit(&mut self,storage_used: u64, extra_spend: Balance) {
+    pub fn refund_deposit(&mut self, storage_used: u64, extra_spend: Balance) {
         let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
         let attached_depo = env::attached_deposit() - extra_spend;
 
@@ -118,6 +121,11 @@ fn check_correct_time(time: u64) -> bool {
     }
 }
 
-fn wallet_contains_correct_nft(wallet: String) -> bool {
-    true
+fn wallet_contains_correct_nft(wallet: &AccountId) -> bool {
+    wallet == &env::predecessor_account_id()
 }
+
+
+near_contract_standards::impl_non_fungible_token_core!(AppContract, tokens);
+near_contract_standards::impl_non_fungible_token_approval!(AppContract, tokens);
+near_contract_standards::impl_non_fungible_token_enumeration!(AppContract, tokens);
