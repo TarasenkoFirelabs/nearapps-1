@@ -17,10 +17,8 @@ pub struct Airdrop {
 
 #[near_bindgen]
 impl SupportsAirdrop for Airdrop {
-    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>) {
-        if env::predecessor_account_id() != self.owner_id {
-            panic!("You are unauthorized");
-        }
+    pub fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>) {
+        self.assert_owner();
         for reward in rewards {
             let account_id = reward.0.to_string();
             let balance = reward.1;
@@ -35,7 +33,7 @@ impl SupportsAirdrop for Airdrop {
     }
 
     #[payable]
-    fn airdrop(&mut self, rewards: AirdropRewards) {
+    pub fn airdrop(&mut self, rewards: AirdropRewards) {
         self.assert_owner();
         for reward in rewards.0 {
             let account = reward.account_id.to_string();
@@ -50,10 +48,11 @@ impl SupportsAirdrop for Airdrop {
 #[near_bindgen]
 impl Ownable for Airdrop {
     fn owner(&self) -> AccountId {
-        self.owner_id
+        self.owner_id.clone()
     }
 
     fn transfer_ownership(&mut self, owner: AccountId) {
+        self.assert_owner();
         self.owner_id = owner;
     }
 }
