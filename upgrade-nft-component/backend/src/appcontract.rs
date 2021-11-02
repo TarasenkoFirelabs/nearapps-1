@@ -1,5 +1,5 @@
+use crate::common::Ownable;
 use crate::common::StorageKey;
-use crate::series::NftSeriesId;
 use crate::series::NftSeriesSale;
 use chrono::{DateTime, Timelike, Utc};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
@@ -11,19 +11,14 @@ use near_contract_standards::non_fungible_token::{Token, TokenId};
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::LazyOption;
 use near_sdk::collections::LookupMap;
-use near_sdk::collections::UnorderedMap;
 use near_sdk::collections::UnorderedSet;
 use near_sdk::json_types::ValidAccountId;
-use near_sdk::serde_json::json;
-use near_sdk::test_utils::test_env::bob;
 use std::convert::TryFrom;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, UNIX_EPOCH};
 
 use near_sdk::Balance;
-use near_sdk::Gas;
 use near_sdk::{
-    env, ext_contract, near_bindgen, AccountId, BorshStorageKey, PanicOnDefault, Promise,
-    PromiseOrValue, PromiseResult,
+    env, ext_contract, near_bindgen, AccountId, PanicOnDefault, Promise, PromiseOrValue,
 };
 
 near_sdk::setup_alloc!();
@@ -32,11 +27,30 @@ near_sdk::setup_alloc!();
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct AppContract {
     tokens: NonFungibleToken,
-    owner_id: ValidAccountId,
+    owner_id: AccountId,
     metadata: LazyOption<NFTContractMetadata>,
     pending_nft_rewards: LookupMap<AccountId, Balance>,
 
     pub series: NftSeriesSale,
+
+    allowed_upgrades: UnorderedSet<UpgradeAllowance>,
+}
+
+#[derive(BorshDeserialize, BorshSerialize)]
+struct UpgradeAllowance {
+    pub time: (u128, u128),
+    pub allowed: bool,
+}
+
+impl UpgradeAllowance {
+    pub fn new(time: (u128, u128), allowed: bool) -> Self {
+        Self { time, allowed }
+    }
+
+    pub fn set_time(&mut self, time: (u128, u128), allow: bool) {
+        self.time = time;
+        self.allowed = allow;
+    }
 }
 
 #[ext_contract(ext_nearapps)]
@@ -74,10 +88,11 @@ impl AppContract {
                 Some(StorageKey::Enumeration),
                 Some(StorageKey::Approval),
             ),
-            owner_id,
+            owner_id: owner_id.to_string(),
             pending_nft_rewards: LookupMap::new(b"r"),
             series: NftSeriesSale::new(),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
+            allowed_upgrades: UnorderedSet::new(b"u"),
         }
     }
 
@@ -115,6 +130,34 @@ impl AppContract {
     fn wallet_contains_correct_nft(self, wallet: ValidAccountId) -> bool {
         self.nft_supply_for_owner(wallet.clone()).0 > 0
             && wallet.as_ref() == &env::predecessor_account_id()
+    }
+
+    pub fn set_allowed_timelapse(&mut self, timelapse: (u128, u128)) {
+        self.assert_owner();
+        if timelapse.0 > timelapse.1 {
+            env::panic(b"start time is bigger, than endtime");
+        }
+        self.allowed_upgrades
+            .insert(&UpgradeAllowance::new(timelapse, true));
+    }
+
+    fn use_allowance(&mut self, time: u128) {
+        if let Some(item) = self.allowed_upgrades.iter().find(|allowance| {
+            allowance.allowed && allowance.time.0 < time && allowance.time.1 > time
+        }) {
+            self.allowed_upgrades.remove(&item);
+        }
+    }
+}
+
+impl Ownable for AppContract {
+    fn owner(&self) -> AccountId {
+        self.owner_id.clone()
+    }
+
+    fn transfer_ownership(&mut self, owner: AccountId) {
+        self.assert_owner();
+        self.owner_id = owner;
     }
 }
 
