@@ -3,6 +3,7 @@ use crate::series::NftSeriesId;
 use crate::series::NftSeriesSale;
 use chrono::{DateTime, Timelike, Utc};
 use near_contract_standards::non_fungible_token::metadata::NFTContractMetadata;
+use near_contract_standards::non_fungible_token::metadata::NonFungibleTokenMetadataProvider;
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_contract_standards::non_fungible_token::metadata::NFT_METADATA_SPEC;
 use near_contract_standards::non_fungible_token::NonFungibleToken;
@@ -40,7 +41,7 @@ pub struct AppContract {
 
 #[ext_contract(ext_nearapps)]
 trait ExtNearApps {
-    fn call(tags: String, contract_name: ValidAccountId, args: String);
+    fn call(tags: String, contract_name: ValidAccountId, method_name: String, args: String);
 }
 
 #[near_bindgen]
@@ -80,11 +81,12 @@ impl AppContract {
         }
     }
 
-    pub fn call_near_apps(time: U128, wallet: ValidAccountId, tags: String) {
-        if check_correct_time(time.0 as u64) && wallet_contains_correct_nft(wallet.as_ref()) {
+    pub fn call_near_apps(self, time: U128, wallet: ValidAccountId, tags: String) {
+        if check_correct_time(time.0 as u64) && self.wallet_contains_correct_nft(wallet.clone()) {
             ext_nearapps::call(
                 tags,
                 ValidAccountId::try_from(env::current_account_id()).unwrap(), // or who we call
+                "method_name".to_string(),                                    // unknown yet
                 "args".to_string(),                                           // unknown yet
                 &env::current_account_id(),
                 0,
@@ -109,6 +111,11 @@ impl AppContract {
             Promise::new(env::predecessor_account_id()).transfer(refund);
         }
     }
+
+    fn wallet_contains_correct_nft(self, wallet: ValidAccountId) -> bool {
+        self.nft_supply_for_owner(wallet.clone()).0 > 0
+            && wallet.as_ref() == &env::predecessor_account_id()
+    }
 }
 
 fn check_correct_time(time: u64) -> bool {
@@ -121,11 +128,13 @@ fn check_correct_time(time: u64) -> bool {
     }
 }
 
-fn wallet_contains_correct_nft(wallet: &AccountId) -> bool {
-    wallet == &env::predecessor_account_id()
-}
-
-
 near_contract_standards::impl_non_fungible_token_core!(AppContract, tokens);
 near_contract_standards::impl_non_fungible_token_approval!(AppContract, tokens);
 near_contract_standards::impl_non_fungible_token_enumeration!(AppContract, tokens);
+
+#[near_bindgen]
+impl NonFungibleTokenMetadataProvider for AppContract {
+    fn nft_metadata(&self) -> NFTContractMetadata {
+        self.metadata.get().unwrap()
+    }
+}
