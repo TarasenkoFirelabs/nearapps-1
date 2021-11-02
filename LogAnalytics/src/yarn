@@ -1,0 +1,23 @@
+yarn run v1.22.11
+$ yarn deploy && parcel src/index.html
+$ yarn build && yarn deploy:contract && gh-pages -d dist/
+$ yarn build:contract && yarn build:web
+$ set -e & cd contract && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release
+$ cp contract/target/wasm32-unknown-unknown/release/*.wasm res/
+$ parcel build src/index.html --public-url ./
+Building...
+Bundling...
+Packaging & Optimizing...
+✨ Built in 6.07s
+
+dist/index.html                  832 B    4.46s
+dist/favicon.721fd337.ico      8.51 KB     18ms
+dist/index.b2942c08.css         1.7 KB    1.32s
+dist/index.75724695.js       409.65 KB    4.21s
+dist/index.b75653f2.js       399.28 KB    4.36s
+$ near deploy --wasmFile ./res/api_call.wasm
+Unable to find [ testnet ] credentials for [ tae.testnet ]...
+Starting deployment. Account id: tae.testnet, node: https://rpc.testnet.near.org, helper: https://helper.testnet.near.org, file: ./res/api_call.wasm
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

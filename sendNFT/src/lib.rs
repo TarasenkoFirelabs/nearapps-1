@@ -90,6 +90,7 @@ impl SendNFTContract {
     pub fn nft_batch_transfer(&mut self) ->bool {
         self.assert_owner();
         for (acc_id, t_id) in self.tokens.iter() {
+            //self.nft.nft_transfer_call(, token_id: TokenId, approval_id: Option<u64>, memo: Option<String>, msg: String)
             ext_self::nft_transfer(
                 acc_id,
                 t_id,
@@ -107,8 +108,9 @@ impl SendNFTContract {
     }
     #[private]
     pub fn nft_transfer(&mut self, account_id: AccountId, token_id: TokenId) {
-        let account = ValidAccountId::try_from(account_id).unwrap();
-        self.nft.nft_transfer(account, token_id, None, None);
+        //let account = ValidAccountId::try_from(account_id.clone()).unwrap();
+
+        self.nft.internal_transfer_unguarded(&token_id, &self.owner_id, &account_id);
     }
     #[private]
     pub fn nft_transfer_callback(&mut self) -> bool {
