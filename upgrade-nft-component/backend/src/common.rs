@@ -8,6 +8,7 @@ use near_sdk::collections::LookupMap;
 use near_sdk::collections::UnorderedMap;
 use near_sdk::collections::UnorderedSet;
 use near_sdk::json_types::ValidAccountId;
+use near_sdk::serde::Serialize;
 use std::collections::HashMap;
 
 use near_sdk::Balance;
@@ -28,13 +29,15 @@ pub trait Ownable {
     fn owner(&self) -> AccountId;
     fn transfer_ownership(&mut self, owner: AccountId);
 }
-#[derive(BorshDeserialize, BorshSerialize)]
-pub struct AirdropRewards(Vec<AirdropReward>);
+#[derive(BorshDeserialize, BorshSerialize, Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct AirdropRewards(pub Vec<AirdropReward>);
 
-#[derive(BorshDeserialize, BorshSerialize, Clone)]
+#[derive(BorshDeserialize, BorshSerialize, Clone, Serialize)]
+#[serde(crate = "near_sdk::serde")]
 pub struct AirdropReward {
-    account_id: AccountId,
-    amount: Balance,
+    pub account_id: AccountId,
+    pub amount: Balance,
 }
 
 pub trait SupportsAirdrop {
