@@ -37,6 +37,7 @@ pub struct NftSeriesJson {
 pub trait NftSeriesProvider {
     fn nft_create_series(
         &mut self,
+        series_id:NftSeriesId,
         token_metadata: TokenMetadata,
         price: Option<Balance>,
         royalty: Option<HashMap<AccountId, u32>>,
@@ -59,16 +60,15 @@ impl NftSeriesSale{
 }
 impl NftSeriesProvider for AppContract {
     
-    fn nft_create_series(
+     fn nft_create_series(
         &mut self,
+        series_id:NftSeriesId,
         token_metadata: TokenMetadata,
         price: Option<Balance>,
         royalty: Option<HashMap<AccountId, u32>>,
     ) -> NftSeriesJson {
         let initial_storage_usage = env::storage_usage();
         let creator_id = env::predecessor_account_id();
-
-        let series_id = format!("{}", (self.series.inner.len() + 1));
 
         assert!(
             self.series.inner.get(&series_id).is_none(),
@@ -81,11 +81,11 @@ impl NftSeriesProvider for AppContract {
             "NearNftComponent: token_metadata.title is required"
         );
 
-        let mut total_perpetual = 0;
+        let mut total = 0;
         let mut total_accounts = 0;
         let royalty_res = if let Some(royalty) = royalty {
             for (_, v) in royalty.iter() {
-                total_perpetual += *v;
+                total += *v;
                 total_accounts += 1;
             }
             royalty
@@ -99,7 +99,7 @@ impl NftSeriesProvider for AppContract {
         );
 
         assert!(
-            total_perpetual <= 9000,
+            total <= 9000,
             "NearNftComponent Exceeds maximum royalty -> 9000",
         );
 
@@ -153,7 +153,7 @@ impl NftSeriesProvider for AppContract {
             royalty: royalty_res,
         }
     }
-    fn nft_series_mint(&mut self, _: std::string::String, _: std::string::String) -> TokenId {
+    fn nft_series_mint(&mut self, series_id: NftSeriesId, receiver_id: AccountId) -> TokenId{
         todo!()
     }
 }
