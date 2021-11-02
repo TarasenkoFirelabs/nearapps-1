@@ -29,7 +29,7 @@ pub struct AppContract {
     tokens: NonFungibleToken,
     owner_id: AccountId,
     metadata: LazyOption<NFTContractMetadata>,
-    pending_nft_rewards: LookupMap<AccountId, Balance>,
+    pub pending_nft_rewards: LookupMap<AccountId, Balance>,
 
     pub series: NftSeriesSale,
 
@@ -37,7 +37,7 @@ pub struct AppContract {
 }
 
 #[derive(BorshDeserialize, BorshSerialize)]
-struct UpgradeAllowance {
+pub struct UpgradeAllowance {
     pub time: (u128, u128),
     pub allowed: bool,
 }
@@ -132,19 +132,20 @@ impl AppContract {
             && wallet.as_ref() == &env::predecessor_account_id()
     }
 
-    pub fn set_allowed_timelapse(&mut self, timelapse: (u128, u128)) {
+    pub fn set_allowed_timelapse(&mut self, start_time: U128, end_time: U128) {
         self.assert_owner();
-        if timelapse.0 > timelapse.1 {
+        if start_time.0 > end_time.0 {
             env::panic(b"start time is bigger, than endtime");
         }
         self.allowed_upgrades
-            .insert(&UpgradeAllowance::new(timelapse, true));
+            .insert(&UpgradeAllowance::new((start_time.0, end_time.0), true));
     }
 
     fn use_allowance(&mut self, time: u128) {
-        if let Some(item) = self.allowed_upgrades.iter().find(|allowance| {
+        let item = self.allowed_upgrades.iter().find(|allowance| {
             allowance.allowed && allowance.time.0 < time && allowance.time.1 > time
-        }) {
+        });
+        if let Some(item) = item {
             self.allowed_upgrades.remove(&item);
         }
     }

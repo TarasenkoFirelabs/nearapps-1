@@ -1,5 +1,5 @@
-use crate::common::{AirdropRewards, SupportsAirdrop, Ownable};
 use crate::appcontract::{AppContract, AppContractContract};
+use crate::common::{AirdropRewards, Ownable, SupportsAirdrop};
 
 //use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{near_bindgen, AccountId};
@@ -15,11 +15,11 @@ impl SupportsAirdrop for AppContract {
             let balance = reward.1;
             //let prev = self.pending_nft_rewards.get(&account_id).unwrap_or_default();
             //if let Some(res) = u128::checked_add(prev, reward.1) {
-            //    self.pending_nft_rewards.insert(&account_id, &res); 
+            //    self.pending_nft_rewards.insert(&account_id, &res);
             //} else {
-            //    panic!("Error"); 
+            //    panic!("Error");
             //}
-            self.pending_nft_rewards.insert(&account_id, &balance); 
+            self.pending_nft_rewards.insert(&account_id, &balance);
         }
     }
 
@@ -44,19 +44,19 @@ impl SupportsAirdrop for AppContract {
  * Note: 'rust-backend' comes from Cargo.toml's 'name' key
  */
 
- #[cfg(test)]
- mod tests {
-     use super::*;
-     use near_sdk::test_utils::{get_logs, VMContextBuilder};
-     use near_sdk::{testing_env, AccountId};
- 
-     // part of writing unit tests is setting up a mock context
-     // provide a `predecessor` here, it'll modify the default context
-     //fn get_context(predecessor: AccountId) -> VMContextBuilder {
-     //    let mut builder = VMContextBuilder::new();
-     //    builder.predecessor_account_id(predecessor);
-     //    builder
-     //}
- 
-     // TESTS HERE
- }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use near_sdk::test_utils::{get_logs, VMContextBuilder};
+    use near_sdk::{testing_env, AccountId};
+
+    // part of writing unit tests is setting up a mock context
+    // provide a `predecessor` here, it'll modify the default context
+    //fn get_context(predecessor: AccountId) -> VMContextBuilder {
+    //    let mut builder = VMContextBuilder::new();
+    //    builder.predecessor_account_id(predecessor);
+    //    builder
+    //}
+
+    // TESTS HERE
+}
