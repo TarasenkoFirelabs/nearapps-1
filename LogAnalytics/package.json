@@ -7,7 +7,7 @@
     "build": "yarn build:contract && yarn build:web",
     "build:contract": "set -e & cd contract && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
     "postbuild:contract": "cp contract/target/wasm32-unknown-unknown/release/*.wasm res/",
-    "deploy:contract": "near deploy --wasmFile ./res/api_call.wasm",
+    "deploy:contract": "near dev-deploy ./res/api_call.wasm",
     "build:web": "parcel build src/index.html --public-url ./",
     "deploy": "yarn build && yarn deploy:contract && gh-pages -d dist/",
     "dev": "yarn build:contract && yarn deploy:contract && nodemon --watch assembly -e ts --exec yarn dev:start",
