@@ -28,11 +28,8 @@ impl SupportsAirdrop for AppContract {
         self.assert_owner();
         for reward in rewards.0 {
             let account = reward.account_id.to_string();
-            //if !self.tokens.accounts.contains_key(&account) {
-            //    self.tokens.internal_register_account(&account);
-            //}
-
-            //self.tokens.internal_transfer_unguarded(self.owner_id, &account);
+        
+            self.tokens.internal_transfer_unguarded(&reward.token_id,&self.owner(), &account);
         }
     }
 }
