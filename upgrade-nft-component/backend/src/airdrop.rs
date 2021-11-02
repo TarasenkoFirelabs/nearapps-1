@@ -1,59 +1,39 @@
-use crate::common::{AirdropRewards, AirdropReward, SupportsAirdrop, Ownable};
+use crate::common::{AirdropRewards, SupportsAirdrop, Ownable};
+use crate::appcontract::{AppContract, AppContractContract};
 
-use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+//use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{near_bindgen, AccountId};
-use near_sdk::collections::LookupMap;
-use near_contract_standards::fungible_token::FungibleToken;
+//use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_sdk::Balance;
-use near_sdk::env;
 
 #[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
-pub struct Airdrop {
-    owner_id: AccountId,
-    token: FungibleToken,
-    pending_rewards: LookupMap<AccountId, Balance>
-}
-
-#[near_bindgen]
-impl SupportsAirdrop for Airdrop {
-    pub fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>) {
+impl SupportsAirdrop for AppContract {
+    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>) {
         self.assert_owner();
         for reward in rewards {
             let account_id = reward.0.to_string();
             let balance = reward.1;
-            //let prev = self.pending_rewards.get(&account_id).unwrap_or_default();
+            //let prev = self.pending_nft_rewards.get(&account_id).unwrap_or_default();
             //if let Some(res) = u128::checked_add(prev, reward.1) {
-            //    self.pending_rewards.insert(&account_id, &res); 
+            //    self.pending_nft_rewards.insert(&account_id, &res); 
             //} else {
             //    panic!("Error"); 
             //}
-            self.pending_rewards.insert(&account_id, &balance); 
+            self.pending_nft_rewards.insert(&account_id, &balance); 
         }
     }
 
     #[payable]
-    pub fn airdrop(&mut self, rewards: AirdropRewards) {
+    fn airdrop(&mut self, rewards: AirdropRewards) {
         self.assert_owner();
         for reward in rewards.0 {
             let account = reward.account_id.to_string();
-            if !self.token.accounts.contains_key(&account) {
-                self.token.internal_register_account(&account);
-            }
-            self.token.internal_deposit(&account, reward.amount);
+            //if !self.tokens.accounts.contains_key(&account) {
+            //    self.tokens.internal_register_account(&account);
+            //}
+
+            //self.tokens.internal_transfer_unguarded(self.owner_id, &account);
         }
-    }
-}
-
-#[near_bindgen]
-impl Ownable for Airdrop {
-    fn owner(&self) -> AccountId {
-        self.owner_id.clone()
-    }
-
-    fn transfer_ownership(&mut self, owner: AccountId) {
-        self.assert_owner();
-        self.owner_id = owner;
     }
 }
 
@@ -61,7 +41,7 @@ impl Ownable for Airdrop {
  * the rest of this file sets up unit tests
  * to run these, the command will be:
  * cargo test --package rust-template -- --nocapture
- * Note: 'rust-template' comes from Cargo.toml's 'name' key
+ * Note: 'rust-backend' comes from Cargo.toml's 'name' key
  */
 
  #[cfg(test)]
