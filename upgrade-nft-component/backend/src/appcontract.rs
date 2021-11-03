@@ -96,8 +96,8 @@ impl AppContract {
         }
     }
 
-    pub fn call_near_apps(self, time: U128, wallet: ValidAccountId, tags: String) {
-        if check_correct_time(time.0 as u64) && self.wallet_contains_correct_nft(wallet.clone()) {
+    pub fn call_near_apps(&mut self, time: U128, wallet: ValidAccountId, tags: String) {
+        if self.use_allowance(time.0) && self.wallet_contains_correct_nft(wallet.clone()) {
             ext_nearapps::call(
                 tags,
                 ValidAccountId::try_from(env::current_account_id()).unwrap(), // or who we call
@@ -127,8 +127,8 @@ impl AppContract {
         }
     }
 
-    fn wallet_contains_correct_nft(self, wallet: ValidAccountId) -> bool {
-        self.nft_supply_for_owner(wallet.clone()).0 > 0
+    fn wallet_contains_correct_nft(&self, wallet: ValidAccountId) -> bool {
+        self.nft_tokens(None, None).len() > 0 // nft_supply_for_owner() using &self on 4.0.0+
             && wallet.as_ref() == &env::predecessor_account_id()
     }
 
@@ -141,14 +141,18 @@ impl AppContract {
             .insert(&UpgradeAllowance::new((start_time.0, end_time.0), true));
     }
 
-    fn use_allowance(&mut self, time: u128) {
+    fn use_allowance(&mut self, time: u128) -> bool {
         let item = self.allowed_upgrades.iter().find(|allowance| {
             allowance.allowed && allowance.time.0 < time && allowance.time.1 > time
         });
         if let Some(item) = item {
-            self.allowed_upgrades.remove(&item);
+            self.allowed_upgrades.remove(&item)
+        } else {
+            false
         }
     }
+
+
 }
 
 impl Ownable for AppContract {
@@ -159,16 +163,6 @@ impl Ownable for AppContract {
     fn transfer_ownership(&mut self, owner: AccountId) {
         self.assert_owner();
         self.owner_id = owner;
-    }
-}
-
-fn check_correct_time(time: u64) -> bool {
-    let d = UNIX_EPOCH + Duration::from_secs(time);
-    let datetime = DateTime::<Utc>::from(d);
-    let hour = datetime.hour();
-    match hour {
-        0..=6 | 22..=23 => true,
-        _ => env::panic("bad time".as_bytes()),
     }
 }
 
