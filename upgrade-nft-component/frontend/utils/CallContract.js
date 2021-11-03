@@ -8,4 +8,8 @@ async function callContract(account, nearConfig, methodName, args) {
     return response.transaction.hash;
   }
 
-  module.exports = callContract;
+  function getNearExplorerTxLink(nearConfig, txid) {
+    return `https://explorer.${nearConfig.networkId}.near.org/transactions/${txid}`
+  }
+
+  module.exports = callContract, getNearExplorerTxLink;
