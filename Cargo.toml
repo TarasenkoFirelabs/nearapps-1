@@ -1,9 +1,0 @@
-[workspace]
-
-members = [
-    "upgrade-nft-component/backend",
-    "LogAnalytics/contract",
-    "makewallets/contract",
-    "NearApps",
-    "sendNFT"
-]
