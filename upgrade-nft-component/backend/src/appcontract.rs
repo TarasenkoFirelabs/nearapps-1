@@ -26,8 +26,8 @@ near_sdk::setup_alloc!();
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct AppContract {
-    tokens: NonFungibleToken,
-    owner_id: AccountId,
+    pub tokens: NonFungibleToken,
+    pub owner_id: AccountId,
     metadata: LazyOption<NFTContractMetadata>,
     pub pending_nft_rewards: LookupMap<AccountId, Balance>,
 

@@ -38,6 +38,7 @@ pub struct AirdropRewards(pub Vec<AirdropReward>);
 pub struct AirdropReward {
     pub account_id: AccountId,
     pub amount: Balance,
+    pub token_id:TokenId,
 }
 
 pub trait SupportsAirdrop {

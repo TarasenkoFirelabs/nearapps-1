@@ -1,0 +1,5 @@
+[workspace]
+
+members = [
+    "upgrade-nft-component/backend",
+]

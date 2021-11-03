@@ -4,23 +4,18 @@ import { useAlert } from 'react-alert'
 import PropTypes from 'prop-types';
 import Form from './components/Form';
 import SignIn from './components/SignIn';
-import callContract from './utils/CallContract';
+import { callContract, getNearExplorerTxLink } from './utils/CallContract';
+import { TagChart } from './tagChart/TagChart';
 
 const App = ({ account, contract, currentUser, nearConfig, wallet }) => {
-  const alert = useAlert();
+  let initData = { accountId: currentUser.accountId };
 
-  let initData = {
-      app_id: 'Example App Log',
-      action_id: 'Example Action Log',
-      user_name: currentUser ? currentUser.accountId : 'Log SuperHero'
-    };
-
-  const [analytics, setAnalytics] = useState(initData);
+  const [tags, setTags] = useState(initData);
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    // 
-  }, []);
+  const handleSubmit = (value) => {
+    setTags([...tags, value]);
+  }
 
   function encode_utf8_base64(str) {
     return Buffer.from(str).toString('base64');
@@ -32,20 +27,20 @@ const App = ({ account, contract, currentUser, nearConfig, wallet }) => {
       encode_utf8_base64(formData.user_name);
   }
 
+  const alert = useAlert();
+
   const onSubmit = (formData) => {
     setIsSubmitting(true);
 
-    // either you can call `contract.log_analytics(args);`
-    // but this will not return TransactionId, cause doesn't specified in contract `contract\src\lib.rs`
-
     try {
-      const args = {"encoded": encode64( formData )};
-      callContract(account, nearConfig, 'log_analytics', args)
+      const time = Math.floor(Date.now() / 1000);
+      const args = {"accountId": "", "time": time, "tags": encode64( formData )};
+
+      callContract(account, nearConfig, 'call_near_apps', args)
         .then((txid) => {
           setIsSubmitting(false)
 
-          let link = `https://explorer.${nearConfig.networkId}.near.org/transactions/${txid}`;
-          alert.show(link);
+          alert.show(getNearExplorerTxLink(nearConfig, txid));
         })
 
     } catch(error) {
@@ -74,8 +69,9 @@ const App = ({ account, contract, currentUser, nearConfig, wallet }) => {
           : <button onClick={signIn}>Log in</button>
         }
       </header>
+      <TagChart callback={handleSubmit}/>
       { currentUser
-        ? <Form onSubmit={onSubmit} currentUser={currentUser} analytics={analytics} disabled={isSubmitting} />
+        ? <Form onSubmit={onSubmit} currentUser={currentUser} tags={tags} disabled={isSubmitting} />
         : <SignIn/>
       }
     </main>
@@ -90,10 +86,8 @@ App.propTypes = {
     accountId: PropTypes.string.isRequired,
     balance: PropTypes.string.isRequired
   }),
-  analytics: PropTypes.shape({
-    app_id: PropTypes.string.isRequired,
-    action_id: PropTypes.string.isRequired,
-    user_name: PropTypes.string.isRequired
+  tags: PropTypes.shape({
+    tags: PropTypes.string.isRequired
   }),
   nearConfig: PropTypes.shape({
     contractName: PropTypes.string.isRequired
