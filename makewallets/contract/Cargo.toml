@@ -1,7 +1,7 @@
 [package]
 name = "makewallets"
 version = "0.1.0"
-authors = ["Near Inc <hello@near.org>"]
+authors = ["adsick <v.vodopolov@4irelabs.com>"]
 edition = "2018"
 
 [lib]
