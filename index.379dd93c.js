@@ -28196,7 +28196,7 @@ async function callContract(account, nearConfig, methodName, args) {
 module.exports = callContract;
 
 },{}],"lnhM6":[function(require,module,exports) {
-const CONTRACT_NAME = "dev-1635865061304-60144228058339";
+const CONTRACT_NAME = "dev-1635862414821-45202448530220";
 function getConfig(env) {
     switch(env){
         case 'mainnet':
@@ -28231,7 +28231,7 @@ function getConfig(env) {
             return {
                 networkId: 'local',
                 nodeUrl: 'http://localhost:3030',
-                keyPath: `${"/Users/deveus"}/.near/validator_key.json`,
+                keyPath: `${"/Users/anymacstore"}/.near/validator_key.json`,
                 walletUrl: 'http://localhost:4000/wallet',
                 contractName: CONTRACT_NAME
             };
@@ -37545,8 +37545,8 @@ async function signTransaction(...args) {
 exports.signTransaction = signTransaction;
 
 },{"buffer":"bOetu","js-sha256":"59ogl","./utils/enums":"4Vcr8","borsh":"WrAXR","./utils/key_pair":"lGB9x"}],"59ogl":[function(require,module,exports) {
-var process = require("process");
 var global = arguments[3];
+var process = require("process");
 /**
  * [js-sha256]{@link https://github.com/emn178/js-sha256}
  *
