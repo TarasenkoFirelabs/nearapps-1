@@ -18,6 +18,9 @@ neardev/dev-account
 neardev/dev-account.env
 .env
 
+# all res wasm's
+/res/*.wasm
+
 # ignore dev .cache
 .cache/
 .parcel-cache
