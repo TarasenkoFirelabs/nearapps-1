@@ -4,8 +4,6 @@ target
 .parcel-cache
 dist
 
-#deps
-Cargo.toml
 
 # IDE
 .idea
