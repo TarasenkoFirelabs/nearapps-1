@@ -1,10 +1,24 @@
 use std::collections::HashMap;
+use std::str;
+use std::convert::{TryFrom,TryInto};
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LookupSet, UnorderedSet};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json::{self, json};
 use near_sdk::{env, near_bindgen, AccountId, PromiseResult};
+extern crate base64;
+use base64::decode;
+
+#[near_bindgen]
+#[derive(BorshDeserialize, BorshSerialize)]
+pub struct AnalyticsData {
+    account_id:AccountId,
+    app_id:String,
+    action_id:String,
+    hash:String,
+}
+
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -14,6 +28,7 @@ pub struct NearApps {
     owner_id: AccountId,
     approved_contracts: LookupSet<AccountId>,
     required_tags: UnorderedSet<String>,
+    analytics_log: LookupSet<AnalyticsData>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -68,6 +83,7 @@ impl Default for NearApps {
             owner_id: env::current_account_id(),
             approved_contracts: LookupSet::new(b"c"),
             required_tags,
+            analytics_log:LookupSet::new(b"l")
         }
     }
 }
@@ -80,12 +96,14 @@ impl NearApps {
         required_tags.extend(init_tags);
         let mut approved_contracts = LookupSet::new(b"c");
         approved_contracts.extend(init_contracts);
+
         Self {
             any_contracts: false,
             any_tags: false,
             owner_id,
             approved_contracts,
             required_tags,
+            analytics_log:LookupSet::new(b"c"),
         }
     }
 
@@ -170,6 +188,29 @@ impl NearApps {
         self.any_tags = any;
     }
 
+   pub fn log_analytics(&mut self,encoded: String) {
+        let call_encoded: Vec<&str> = encoded.split('_').collect();
+        let mut call_decoded: Vec<String> = Vec::new();
+        for i in 0..3 {
+            let decoded = str::from_utf8(&decode(call_encoded[i]).unwrap())
+                .unwrap()
+                .to_string();
+            call_decoded.push(decoded);
+        }
+        
+        env::log_str(&format!(
+            "app_id: {}, action_id: {}, user_name: {}",
+            call_decoded[0], call_decoded[1], call_decoded[2]
+        ));
+
+        let analytics_data=AnalyticsData{
+            app_id:call_decoded[0].clone(),
+            action_id:call_decoded[1].clone(),
+            account_id:AccountId::new_unchecked(call_decoded[2].clone()),
+            hash:encoded,
+        };
+        self.analytics_log.insert(&analytics_data);
+    }
     #[private]
     pub fn check_promise(&mut self, tags: Vec<HashMap<String, String>>) {
         match env::promise_result(0) {
