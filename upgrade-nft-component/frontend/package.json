@@ -13,7 +13,7 @@
     "dev": "yarn build:contract && yarn deploy:contract && nodemon --watch assembly -e ts --exec yarn dev:start",
     "lint": "eslint \"./**/*.js\" \"./**/*.jsx\"",
     "start": "yarn deploy && parcel index.html",
-    "dev:start": "yarn build:web && env-cmd parcel src/index.html --open",
+    "dev:start": "yarn build:web && env-cmd parcel index.html --open",
     "test": "yarn build:contract && asp && jest"
   },
   "devDependencies": {
