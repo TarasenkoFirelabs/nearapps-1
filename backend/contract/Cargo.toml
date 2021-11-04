@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "app",
+    "app-nft",
+    "app-wallet-creation",
+]
