@@ -8,8 +8,8 @@ use near_sdk_sim::{
     ContractAccount, UserAccount, DEFAULT_GAS, STORAGE_AMOUNT,
 };
 
-extern crate near_apps;
-use near_apps::{ContractArgs, NearAppsContract};
+extern crate app;
+use app::{ContractArgs, NearAppsContract};
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
     CONTRACT_BYTES => "res/near_apps.wasm",
