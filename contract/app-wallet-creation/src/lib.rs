@@ -32,21 +32,21 @@ pub trait ExtMakeWallets {
 #[near_bindgen]
 impl MakeWallets {
     #[payable]
-    pub fn make_wallets(new_account: NewAccount) {
+    pub fn make_wallets(new_account: NewAccount) -> Promise {
         Promise::new("near".parse().unwrap()).function_call(
                 "create_account".to_string(),
                 json!({"new_account_id": new_account.account_id.to_string(), "new_public_key": new_account.public_key}).to_string().as_bytes().to_vec(),
                 new_account.initial_amount.0, //initial deposit
                 GAS.into()
-           ).then(ext_self::on_account_created(env::current_account_id(), 0, GAS.into()));
-           
+           ).then(ext_self::on_account_created(env::current_account_id(), 0, GAS.into()))      
     }
 
     #[private]
-    pub fn on_account_created(#[callback] val: bool) {
+    pub fn on_account_created(#[callback] val: bool) -> bool {
         match val {
             true => env::log_str("account was created successfully"),
             false => env::log_str("error during account creation"),
         }
+        val
     }
 }

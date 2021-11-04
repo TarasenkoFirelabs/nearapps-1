@@ -8,5 +8,8 @@ edition = "2018"
 [dependencies]
 near-sdk = "4.0.0-pre.2"
 
+[dev-dependencies]
+near-sdk-sim = "4.0.0-pre.2"
+
 [lib]
 crate-type = ["cdylib", "rlib"]
