@@ -25,13 +25,6 @@ impl SupportsAirdrop for AppContract {
     }
 }
 
-/*
- * the rest of this file sets up unit tests
- * to run these, the command will be:
- * cargo test --package rust-template -- --nocapture
- * Note: 'rust-backend' comes from Cargo.toml's 'name' key
- */
-
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -41,17 +34,10 @@ mod tests {
     use near_sdk::json_types::ValidAccountId;
     use near_sdk::serde::export::TryFrom;
 
-    // part of writing unit tests is setting up a mock context
-    // provide a `predecessor` here, it'll modify the default context
     fn get_context(predecessor: ValidAccountId) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
         builder.predecessor_account_id(predecessor);
         builder
-    }
-
-    #[test]
-    fn test() {
-        assert_eq!(2 + 2, 4);
     }
 
     #[test]
@@ -73,17 +59,23 @@ mod tests {
 
     #[test]
     fn test_airdrop_default_meta() {
-        let context = VMContextBuilder::new();
+        let mut context = VMContextBuilder::new();
+        context.predecessor_account_id(TryFrom::try_from("test_airdop_owner.testnet").unwrap());
         testing_env!(context.build());
-        let valid_account = TryFrom::try_from("bob.near").unwrap();
-        let mut contract = AppContract::new_default_meta(valid_account);
+
+        //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
+        let owner = "test_airdop_owner.testnet".to_string();
+        //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
+        let mut contract = AppContract::new_default_meta(TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap());
+        println!("{}", &contract.tokens.tokens_per_owner.as_ref().unwrap().contains_key(&owner));
+        let token_id = (&contract.tokens.tokens_per_owner.as_ref().unwrap()).get(&owner).unwrap().to_vec()[0].clone();
         let reward = AirdropReward {
-            account_id: "test_airdop_receiver.near".to_string(),
+            account_id: "test_airdop_receiver.testnet".to_string(),
             amount: 0,
-            token_id: "token".to_string(),
+            token_id: token_id,
         };
         let rewards = AirdropRewards(vec![reward]);
-        contract.add_pending_rewards(vec![("test_airdop_owner.near".to_string(), 0)]);
+        contract.add_pending_rewards(vec![(owner, 0)]);
         contract.airdrop(rewards);
     }
 }
