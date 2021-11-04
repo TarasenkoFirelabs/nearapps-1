@@ -12,8 +12,8 @@ extern crate app;
 use app::{ContractArgs, NearAppsContract};
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
-    CONTRACT_BYTES => "res/near_apps.wasm",
-    TEST_FILE_BYTES => "tests/near_app_tests.wasm",
+    CONTRACT_BYTES => "../res/app.wasm",
+    TEST_FILE_BYTES => "tests/status_message.wasm",
 }
 
 fn init() -> (
