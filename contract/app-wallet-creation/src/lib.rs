@@ -24,6 +24,10 @@ pub struct NewAccount {
     initial_amount: U128,
 }
 
+impl NewAccount {
+    pub fn new(account_id: AccountId, public_key: PublicKey, initial_amount: U128) -> Self { Self { account_id, public_key, initial_amount } }
+}
+
 #[ext_contract(ext_self)]
 pub trait ExtMakeWallets {
     fn on_account_created(#[callback] val: bool) -> bool;
