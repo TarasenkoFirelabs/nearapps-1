@@ -21,11 +21,10 @@ impl Default for MakeWallets {
 pub struct NewAccount {
     account_id: AccountId,
     public_key: PublicKey,
-    initial_amount: U128,
 }
 
 impl NewAccount {
-    pub fn new(account_id: AccountId, public_key: PublicKey, initial_amount: U128) -> Self { Self { account_id, public_key, initial_amount } }
+    pub fn new(account_id: AccountId, public_key: PublicKey) -> Self { Self { account_id, public_key } }
 }
 
 #[ext_contract(ext_self)]
@@ -40,7 +39,7 @@ impl MakeWallets {
         Promise::new("near".parse().unwrap()).function_call(
                 "create_account".to_string(),
                 json!({"new_account_id": new_account.account_id.to_string(), "new_public_key": new_account.public_key}).to_string().as_bytes().to_vec(),
-                new_account.initial_amount.0, //initial deposit
+                env::attached_deposit(),
                 GAS.into()
            ).then(ext_self::on_account_created(env::current_account_id(), 0, GAS.into()))      
     }
