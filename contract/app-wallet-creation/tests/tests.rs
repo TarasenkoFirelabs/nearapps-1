@@ -21,7 +21,7 @@ pub fn init() -> (UserAccount, ContractAccount<MakeWalletsContract>, UserAccount
     // Use `None` for default genesis configuration; more info below
     let root = init_simulator(Some(config));
 
-    root.deploy(&LINKDROP_BYTES, "near".parse().unwrap(), to_yocto("100"));
+    root.deploy(&LINKDROP_BYTES, "testnet".parse().unwrap(), to_yocto("100"));
 
     let contract = deploy!{
         contract: MakeWalletsContract,
@@ -69,6 +69,10 @@ fn not_enough_balance(){
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
 }
 
+
+
+//this test is wrong because our "near" mock allows for creating one account multiple times.
+//which real "near" doesn't allow to do.
 #[test]
 //#[should_panic]
 fn wallet_already_exists(){
