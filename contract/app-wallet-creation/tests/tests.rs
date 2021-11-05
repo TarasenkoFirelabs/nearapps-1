@@ -21,7 +21,7 @@ pub fn init() -> (UserAccount, ContractAccount<MakeWalletsContract>, UserAccount
     // Use `None` for default genesis configuration; more info below
     let root = init_simulator(Some(config));
 
-    root.deploy(&LINKDROP_BYTES, "testnet".parse().unwrap(), to_yocto("100"));
+    root.deploy(&LINKDROP_BYTES, "near".parse().unwrap(), to_yocto("100"));
 
     let contract = deploy!{
         contract: MakeWalletsContract,
@@ -49,10 +49,12 @@ pub fn successful_wallet_creation(){
 
     // uses default gas amount
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
-    println!("{:#?}", result.promise_results());
+    //println!("{:#?}", result.promise_results());
     println!("{:?}", result.outcome().logs);
     println!("{:?}", result.outcome().status);
     assert!(result.is_ok());
+    let status = format!("{:?}", result.outcome().status);
+    assert_eq!(status, "SuccessValue(`true`)");
 }
 
 #[test]
@@ -67,6 +69,8 @@ fn not_enough_balance(){
 
 
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
+    let status = format!("{:?}", result.outcome().status);
+    assert_eq!(status, "SuccessValue(`false`)");
 }
 
 #[test]
@@ -84,9 +88,10 @@ fn wallet_already_exists(){
 
     let new_account = NewAccount::new(account_id, public_key);
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
+
     println!("status: {:?}", result.outcome().status);
-    if let ExecutionStatus::SuccessValue(val) = result.outcome().status.clone(){
-        println!("execution status: {:?}", val);
-    }
     assert!(result.is_ok());
+
+    let status = format!("{:?}", result.outcome().status);
+    assert_eq!(status, "SuccessValue(`false`)");
 }
