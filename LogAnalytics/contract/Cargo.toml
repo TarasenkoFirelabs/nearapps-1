@@ -5,10 +5,11 @@ authors = ["Nino <n.lipartiia@4irelabs.com>"]
 edition = "2018"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 near-sdk = "4.0.0-pre.2"
+near-sdk-sim = "3.2.0"
 base64 = "0.13.0"
 
 [profile.release]

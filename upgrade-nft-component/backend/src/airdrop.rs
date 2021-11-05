@@ -40,11 +40,12 @@ mod tests {
         builder
     }
 
-    #[test]
+    //#[test]
     #[should_panic(expected = "Ownable: predecessor is not the owner")]
     fn test_airdrop_default_meta_panic() {
         let context = VMContextBuilder::new();
         testing_env!(context.build());
+        
         let valid_account = TryFrom::try_from("test_airdop_owner.testnet").unwrap();
         let mut contract = AppContract::new_default_meta(valid_account);
         let reward = AirdropReward {
@@ -65,17 +66,19 @@ mod tests {
 
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
-        //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
-        let mut contract = AppContract::new_default_meta(TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap());
+        let receiver = "test_airdop_receiver.testnet".to_string();
+        let mut contract = AppContract::new_default_meta(TryFrom::try_from(owner.clone()).unwrap());
+        contract.add_pending_rewards(vec![(receiver.clone(), 0)]);
+        println!("{}", contract.pending_nft_rewards.contains_key(&receiver));
         println!("{}", &contract.tokens.tokens_per_owner.as_ref().unwrap().contains_key(&owner));
-        let token_id = (&contract.tokens.tokens_per_owner.as_ref().unwrap()).get(&owner).unwrap().to_vec()[0].clone();
+        //let token_id = (&contract.tokens.tokens_per_owner.as_ref().unwrap()).get(&owner).unwrap().to_vec()[0].clone();
+        //let token_id = 
         let reward = AirdropReward {
-            account_id: "test_airdop_receiver.testnet".to_string(),
+            account_id: receiver.clone(),
             amount: 0,
             token_id: token_id,
         };
         let rewards = AirdropRewards(vec![reward]);
-        contract.add_pending_rewards(vec![(owner, 0)]);
         contract.airdrop(rewards);
     }
 }
