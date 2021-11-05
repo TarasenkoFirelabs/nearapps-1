@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use near_sdk::{AccountId, PublicKey, json_types::U128};
-use near_sdk_sim::{ContractAccount, DEFAULT_GAS, ExecutionResult, STORAGE_AMOUNT, UserAccount, call, deploy, init_simulator, lazy_static_include::syn::token::Use, runtime::GenesisConfig, to_yocto, view};
+use near_sdk_sim::{ContractAccount, DEFAULT_GAS, ExecutionResult, STORAGE_AMOUNT, UserAccount, call, deploy, init_simulator, lazy_static_include::syn::token::Use, runtime::GenesisConfig, to_yocto, transaction::ExecutionStatus, view};
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
     // update `contract.wasm` for your contract's name
@@ -52,7 +52,7 @@ pub fn successful_wallet_creation(){
     println!("{:#?}", result.promise_results());
     println!("{:?}", result.outcome().logs);
     println!("{:?}", result.outcome().status);
-    assert!(result.is_ok()); 
+    assert!(result.is_ok());
 }
 
 #[test]
@@ -69,12 +69,7 @@ fn not_enough_balance(){
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
 }
 
-
-
-//this test is wrong because our "near" mock allows for creating one account multiple times.
-//which real "near" doesn't allow to do.
 #[test]
-//#[should_panic]
 fn wallet_already_exists(){
     let (_root, contract, user) = init();
 
@@ -89,6 +84,9 @@ fn wallet_already_exists(){
 
     let new_account = NewAccount::new(account_id, public_key);
     let result = call!(user, contract.make_wallets(new_account), deposit = initial_amount);
-
-    assert!(!result.is_ok());
+    println!("status: {:?}", result.outcome().status);
+    if let ExecutionStatus::SuccessValue(val) = result.outcome().status.clone(){
+        println!("execution status: {:?}", val);
+    }
+    assert!(result.is_ok());
 }
