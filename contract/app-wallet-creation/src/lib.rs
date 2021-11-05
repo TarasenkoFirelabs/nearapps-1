@@ -3,7 +3,6 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json::json;
 use near_sdk::{env, json_types::U128, near_bindgen, AccountId, Promise, *};
 
-const GAS: u64 = 40_000_000_000_000;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -32,6 +31,8 @@ pub trait ExtMakeWallets {
     fn on_account_created(#[callback] val: bool) -> bool;
 }
 
+const GAS: u64 = 10_000_000_000_000;
+
 #[near_bindgen]
 impl MakeWallets {
     #[payable]
@@ -40,8 +41,8 @@ impl MakeWallets {
                 "create_account".to_string(),
                 json!({"new_account_id": new_account.account_id.to_string(), "new_public_key": new_account.public_key}).to_string().as_bytes().to_vec(),
                 env::attached_deposit(),
-                GAS.into()
-           ).then(ext_self::on_account_created(env::current_account_id(), 0, GAS.into()))      
+                env::prepaid_gas()/2
+           ).then(ext_self::on_account_created(env::current_account_id(), 0, env::prepaid_gas()/3))      
     }
 
     #[private]
