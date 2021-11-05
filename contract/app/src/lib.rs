@@ -1,6 +1,6 @@
 use std::collections::HashMap;
+use std::convert::{TryFrom, TryInto};
 use std::str;
-use std::convert::{TryFrom,TryInto};
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{LookupSet, UnorderedSet};
@@ -13,12 +13,11 @@ use base64::decode;
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct AnalyticsData {
-    account_id:AccountId,
-    app_id:String,
-    action_id:String,
-    hash:String,
+    account_id: AccountId,
+    app_id: String,
+    action_id: String,
+    hash: String,
 }
-
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -83,7 +82,7 @@ impl Default for NearApps {
             owner_id: env::current_account_id(),
             approved_contracts: LookupSet::new(b"c"),
             required_tags,
-            analytics_log:LookupSet::new(b"l")
+            analytics_log: LookupSet::new(b"l"),
         }
     }
 }
@@ -91,7 +90,11 @@ impl Default for NearApps {
 #[near_bindgen]
 impl NearApps {
     #[init]
-    pub fn new(owner_id: AccountId, init_tags: Vec<String>, init_contracts: Vec<AccountId>) -> Self {
+    pub fn new(
+        owner_id: AccountId,
+        init_tags: Vec<String>,
+        init_contracts: Vec<AccountId>,
+    ) -> Self {
         let mut required_tags = UnorderedSet::new(b"t");
         required_tags.extend(init_tags);
         let mut approved_contracts = LookupSet::new(b"c");
@@ -103,10 +106,11 @@ impl NearApps {
             owner_id,
             approved_contracts,
             required_tags,
-            analytics_log:LookupSet::new(b"c"),
+            analytics_log: LookupSet::new(b"c"),
         }
     }
 
+    #[payable]
     pub fn call(
         &mut self,
         tags: Vec<HashMap<String, String>>,
@@ -119,7 +123,7 @@ impl NearApps {
             contract_name,
             &args.function_name,
             &args.params.into_bytes(),
-            0,
+            env::attached_deposit(), // what should we do with attached_deposit on failed callback?
             env::prepaid_gas() / 3,
         );
         env::promise_then(
@@ -188,7 +192,7 @@ impl NearApps {
         self.any_tags = any;
     }
 
-   pub fn log_analytics(&mut self,encoded: String) {
+    pub fn log_analytics(&mut self, encoded: String) {
         let call_encoded: Vec<&str> = encoded.split('_').collect();
         let mut call_decoded: Vec<String> = Vec::new();
         for i in 0..3 {
@@ -197,17 +201,17 @@ impl NearApps {
                 .to_string();
             call_decoded.push(decoded);
         }
-        
+
         env::log_str(&format!(
             "app_id: {}, action_id: {}, user_name: {}",
             call_decoded[0], call_decoded[1], call_decoded[2]
         ));
 
-        let analytics_data=AnalyticsData{
-            app_id:call_decoded[0].clone(),
-            action_id:call_decoded[1].clone(),
-            account_id:AccountId::new_unchecked(call_decoded[2].clone()),
-            hash:encoded,
+        let analytics_data = AnalyticsData {
+            app_id: call_decoded[0].clone(),
+            action_id: call_decoded[1].clone(),
+            account_id: AccountId::new_unchecked(call_decoded[2].clone()),
+            hash: encoded,
         };
         self.analytics_log.insert(&analytics_data);
     }
