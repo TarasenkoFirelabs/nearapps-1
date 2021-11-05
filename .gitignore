@@ -13,3 +13,8 @@ Cargo.lock
 **/*.rs.bk
 
 .rustc_info.json
+
+# node_modules
+node_modules
+.next
+yarn-error.log
