@@ -1,8 +1,9 @@
 import * as dotenv from 'dotenv';
+import type { Config } from '@orm/types';
 
 dotenv.config();
 
-export = {
+const config: Config.InitialOptions = {
   type: 'postgres' as const,
   url: process.env.DATABASE_URL,
   entities: ['src/server/app/**/*.entity.ts'],
