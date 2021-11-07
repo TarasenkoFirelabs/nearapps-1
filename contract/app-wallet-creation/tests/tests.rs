@@ -41,7 +41,7 @@ pub fn init() -> (UserAccount, ContractAccount<MakeWalletsContract>, UserAccount
 #[test]
 pub fn successful_wallet_creation(){
     let (_root, contract, user) = init();
-
+    
     let account_id = "adsick".parse().unwrap();
     let public_key = PublicKey::from_str("ed25519:8MtAwUtEuU18u9xrehUEBWgcziTHxFhXLNE9F5xq7ExU").unwrap();
     let initial_amount = to_yocto("1");

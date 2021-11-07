@@ -29,7 +29,7 @@ pub struct AppContract {
     pub tokens: NonFungibleToken,
     pub owner_id: AccountId,
     metadata: LazyOption<NFTContractMetadata>,
-    pub pending_nft_rewards: LookupMap<AccountId, Balance>,
+    pub pending_nft_rewards: LookupMap<AccountId, TokenId>,
 
     pub series: NftSeriesSale,
 

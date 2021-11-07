@@ -1,3 +1,4 @@
+use near_contract_standards::non_fungible_token::TokenId;
 use crate::appcontract::{AppContract, AppContractContract};
 use crate::common::{AirdropReward, AirdropRewards, Ownable, SupportsAirdrop};
 
@@ -6,12 +7,12 @@ use near_sdk::{near_bindgen, AccountId};
 
 #[near_bindgen]
 impl SupportsAirdrop for AppContract {
-    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>) {
+    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>) {
         self.assert_owner();
         for reward in rewards {
             let account_id = reward.0.to_string();
-            let balance = reward.1;
-            self.pending_nft_rewards.insert(&account_id, &balance);
+            let token_id = reward.1;
+            self.pending_nft_rewards.insert(&account_id, &token_id);
         }
     }
 
@@ -53,8 +54,9 @@ mod tests {
             amount: 0,
             token_id: "token".to_string(),
         };
+        let token_id=reward.token_id.clone();
         let rewards = AirdropRewards(vec![reward]);
-        contract.add_pending_rewards(vec![("test_airdop_owner.testnet".to_string(), 0)]);
+        contract.add_pending_rewards(vec![("test_airdop_owner.testnet".to_string(), token_id)]);
         contract.airdrop(rewards);
     }
 
@@ -87,10 +89,10 @@ mod tests {
         let reward = AirdropReward {
             account_id: "test_airdop_receiver.testnet".to_string(),
             amount: 0,
-            token_id: token_id,
+            token_id: token_id.clone(),
         };
         let rewards = AirdropRewards(vec![reward]);
-        contract.add_pending_rewards(vec![(owner, 0)]);
+        contract.add_pending_rewards(vec![(owner, token_id)]);
         contract.airdrop(rewards);
     }
 }

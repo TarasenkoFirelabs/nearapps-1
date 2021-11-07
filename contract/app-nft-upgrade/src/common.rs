@@ -43,7 +43,7 @@ pub struct AirdropReward {
 
 pub trait SupportsAirdrop {
     fn airdrop(&mut self, rewards: AirdropRewards);
-    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, Balance)>);
+    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>);
     //fn get_pending_ft_rewards() -> LookupMap<AccountId, Balance>;
 }
 
