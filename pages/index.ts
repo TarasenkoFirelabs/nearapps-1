@@ -1,6 +1,23 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import useSwr from 'swr'
+import Link from 'next/link'
 import styles from '../styles/Home.module.css'
+
+declare const module: any;
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
+}
+bootstrap();
+
+const fetcher = (url) => fetch(url).then((res) => res.json())
 
 export default function Home() {
   return (

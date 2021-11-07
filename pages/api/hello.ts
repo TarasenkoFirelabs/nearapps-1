@@ -7,5 +7,5 @@ type Data = {
 }
 
 export default (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  res.status(200).json({ name: 'Andrii Tarasenko' })
+  res.status(200).json({ name: 'Andrii Tarasenko 2' })
 }
