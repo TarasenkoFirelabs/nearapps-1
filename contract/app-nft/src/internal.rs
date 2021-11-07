@@ -18,6 +18,17 @@ pub(crate) fn assert_one_yocto() {
         "Requires attached deposit of exactly 1 yoctoNEAR"
     )
 }
+pub(crate) fn promise_is_succeeded() -> bool {
+    assert_eq!(
+        env::promise_results_count(),
+        1,
+        "Contract expected a result on the callback"
+    );
+    match env::promise_result(0) {
+        PromiseResult::Successful(_) => true,
+        _ => false,
+    }
+}
 
 #[near_bindgen]
 impl Ownable for NftContract {
