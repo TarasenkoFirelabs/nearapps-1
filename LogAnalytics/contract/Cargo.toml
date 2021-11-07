@@ -1,5 +1,5 @@
 [package]
-name = "api-call"
+name = "api"
 version = "0.1.0"
 authors = ["Nino <n.lipartiia@4irelabs.com>"]
 edition = "2018"
@@ -9,8 +9,10 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 near-sdk = "4.0.0-pre.2"
-near-sdk-sim = "3.2.0"
 base64 = "0.13.0"
+
+[dev-dependencies]
+near-sdk-sim = "4.0.0-pre.4"
 
 [profile.release]
 codegen-units = 1
