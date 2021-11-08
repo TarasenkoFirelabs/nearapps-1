@@ -1,5 +1,5 @@
 #Creates a layer from node:17.0.1 image.
-FROM node:17.0.1
+FROM node:16.8.0
 
 #Creates directories
 RUN mkdir -p /usr/src/app

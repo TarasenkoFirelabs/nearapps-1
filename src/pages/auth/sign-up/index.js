@@ -1,9 +1,25 @@
 import { Button } from "antd";
-import Image from "next/image";
-import React, { useState } from 'react';
 import { Colors, Icons } from '../../../utils';
+import Image from "next/image";
+import React, { useState, useContext, useEffect } from 'react';
+import { initNear, hasKey } from "../../../state/near";
+// import { appStore, onAppMount } from '../../../state/app';
 
 function SignUp() {
+
+  
+  initNear();
+
+  // const { state, dispatch, update } = useContext(appStore);
+
+  // const onMount = () => {
+  //   dispatch(onAppMount());
+  // };
+  // useEffect(onMount, []);
+
+  // console.log('state', state);
+
+  // const { wallet } = state;
 
   const [inputType, setInputType] = useState('email');
 
@@ -56,11 +72,11 @@ function SignUp() {
           </div>
           <p className="SignUp__formContainer-form-term">by clicking continue you must agree to near labs
             <a style={{ color: 'lightblue' }}> Terms & Conditions</a> ans
-            <a style={{ color: 'lightblue' }}>  Privacu Policy</a>
+            <a style={{ color: 'lightblue' }}>  Privacy Policy</a>
           </p>
           <hr className='SignUp__formContainer-line' />
           <p className='SignUp__formContainer-textButton'>Already have Near Account?</p>
-          <Button className="SignUp__formContainer-loginButton">Log in with NEAR</Button>
+          <Button className="SignUp__formContainer-loginButton" onClick={() => wallet.signIn()}>Log in with NEAR</Button>
         </div>
       </div>
     </div >
