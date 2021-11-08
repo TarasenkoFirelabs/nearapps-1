@@ -2,7 +2,6 @@
 members = [
     "app",
     "app-nft",
-    "app-nft-upgrade",
     "app-wallet-creation",
 ]
 

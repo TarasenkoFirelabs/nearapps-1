@@ -1,12 +1,26 @@
 use near_contract_standards::non_fungible_token::TokenId;
-use crate::appcontract::{AppContract, AppContractContract};
-use crate::common::{AirdropReward, AirdropRewards, Ownable, SupportsAirdrop};
+use crate::*;
+use near_sdk::{AccountId};
+use near_sdk::serde::Serialize;
 
-use near_sdk::Balance;
-use near_sdk::{near_bindgen, AccountId};
+#[derive(BorshDeserialize, BorshSerialize, Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct AirdropRewards(pub Vec<AirdropReward>);
 
-#[near_bindgen]
-impl SupportsAirdrop for AppContract {
+#[derive(BorshDeserialize, BorshSerialize, Clone, Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct AirdropReward {
+    pub account_id: AccountId,
+    pub token_id:TokenId,
+}
+
+pub trait SupportsAirdrop {
+    fn airdrop(&mut self, rewards: AirdropRewards);
+    fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>);
+    //fn get_pending_ft_rewards() -> LookupMap<AccountId, Balance>;
+}
+
+impl SupportsAirdrop for NftContract {
     fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>) {
         self.assert_owner();
         for reward in rewards {
@@ -16,13 +30,11 @@ impl SupportsAirdrop for AppContract {
         }
     }
 
-    #[payable]
     fn airdrop(&mut self, rewards: AirdropRewards) {
         self.assert_owner();
         for reward in rewards.0 {
             let account = reward.account_id.to_string();
-            self.tokens
-                .internal_transfer_unguarded(&reward.token_id, &self.owner(), &account);
+            self.nft_transfer_unsafe(&reward.token_id, &self.owner(), &account);
         }
     }
 }
@@ -47,11 +59,11 @@ mod tests {
     fn test_airdrop_default_meta_panic() {
         let context = VMContextBuilder::new();
         testing_env!(context.build());
-        let valid_account = TryFrom::try_from("test_airdop_owner.testnet").unwrap();
-        let mut contract = AppContract::new_default_meta(valid_account);
+        //let valid_account = TryFrom::try_from("test_airdop_owner.testnet").unwrap();
+        let account_id:AccountId="test_airdop_owner.testnet".into();
+        let mut contract = NftContract::new_default_meta(account_id);
         let reward = AirdropReward {
             account_id: "test_airdop_receiver.testnet".to_string(),
-            amount: 0,
             token_id: "token".to_string(),
         };
         let token_id=reward.token_id.clone();
@@ -69,26 +81,25 @@ mod tests {
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
-        let mut contract = AppContract::new_default_meta(
+        let mut contract = NftContract::new_default_meta(
             TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap(),
         );
         println!(
             "{}",
             &contract
-                .tokens
+                .token
                 .tokens_per_owner
                 .as_ref()
                 .unwrap()
                 .contains_key(&owner)
         );
-        let token_id = (&contract.tokens.tokens_per_owner.as_ref().unwrap())
+        let token_id = (&contract.token.tokens_per_owner.as_ref().unwrap())
             .get(&owner)
             .unwrap()
             .to_vec()[0]
             .clone();
         let reward = AirdropReward {
             account_id: "test_airdop_receiver.testnet".to_string(),
-            amount: 0,
             token_id: token_id.clone(),
         };
         let rewards = AirdropRewards(vec![reward]);
@@ -96,3 +107,4 @@ mod tests {
         contract.airdrop(rewards);
     }
 }
+

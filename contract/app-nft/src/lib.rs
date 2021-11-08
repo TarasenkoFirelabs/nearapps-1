@@ -1,8 +1,17 @@
 mod internal;
 mod mint;
+mod series;
+mod query;
+mod claim;
+mod airdrop;
 
+//mod airdrop;
 use crate::internal::*;
-use near_contract_standards::non_fungible_token::{core::NonFungibleTokenCore, NonFungibleToken};
+use crate::series::*;
+use near_sdk::collections::LookupMap;
+use near_sdk::collections::UnorderedMap;
+
+use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_contract_standards::non_fungible_token::{
     metadata::{
         NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
@@ -14,30 +23,37 @@ use near_sdk::json_types::ValidAccountId;
 use near_sdk::Balance;
 use near_sdk::Gas;
 use near_sdk::{
-    collections::LazyOption, env, ext_contract, near_bindgen, AccountId, BorshStorageKey,
-    PanicOnDefault, Promise, PromiseOrValue, PromiseResult,
+    collections::LazyOption, env, ext_contract, near_bindgen, serde_json::json, AccountId,
+    BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue, PromiseResult,
 };
-
 
 use std::convert::*;
 near_sdk::setup_alloc!();
+
+pub const TOKEN_DELIMETER: char = ':';
+pub const TITLE_DELIMETER: &str = " #";
+pub const EDITION_DELIMETER: &str = "/";
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct NftContract {
     token: NonFungibleToken,
+    token_series: UnorderedMap<NftSeriesId, NftSeries>,
     owner_id: AccountId,
     total_supply: u128,
     metadata: LazyOption<NFTContractMetadata>,
+    pending_nft_rewards: LookupMap<AccountId, TokenId>,
 }
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
     NonFungibleToken,
     TokenAccountMapping,
     TokenMetadata,
+    TokenSeriesById,
     Enumeration,
     Approval,
     Metadata,
+    PendingRewards,
 }
 pub trait Ownable {
     fn assert_owner(&self) {
@@ -59,14 +75,13 @@ trait ExtSelf {
         receiver_id: ValidAccountId,
         metadata: TokenMetadata,
     ) -> Promise;
+
+    fn nft_tokens(&self, from_index: Option<U128>, limit: Option<u64>) -> Vec<Token>;
+    fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
 }
 
 const GAS_FOR_ROYALTIES: Gas = 0;
 const NO_DEPOSIT: Balance = 0;
-
-near_contract_standards::impl_non_fungible_token_core!(NftContract, token);
-near_contract_standards::impl_non_fungible_token_approval!(NftContract, token);
-near_contract_standards::impl_non_fungible_token_enumeration!(NftContract, token);
 
 #[near_bindgen]
 impl NonFungibleTokenMetadataProvider for NftContract {
@@ -99,7 +114,7 @@ impl NftContract {
         metadata.assert_valid();
         let owner = ValidAccountId::try_from(owner_id.clone()).expect("Invalid AccountId");
 
-        let mut nft = NonFungibleToken::new(
+        let nft = NonFungibleToken::new(
             StorageKey::NonFungibleToken,
             owner,
             Some(StorageKey::TokenMetadata),
@@ -109,8 +124,35 @@ impl NftContract {
         Self {
             owner_id,
             token: nft,
+            token_series: UnorderedMap::new(StorageKey::TokenSeriesById),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
+            pending_nft_rewards: LookupMap::new(StorageKey::PendingRewards),
             total_supply: 0,
         }
     }
+    pub fn nft_transfer_unsafe(
+        &mut self,
+        token_id: &TokenId,
+        owner_id: &AccountId,
+        receiver_id: &AccountId,
+    ) {
+        assert_self();
+        self.token
+            .internal_transfer_unguarded(token_id, owner_id, receiver_id);
+        env::log(
+            json!({
+                "type": "nft_transfer",
+                "params": {
+                    "token_id": token_id,
+                    "sender_id": owner_id,
+                    "receiver_id": receiver_id
+                }
+            })
+            .to_string()
+            .as_bytes(),
+        );
+    }
 }
+near_contract_standards::impl_non_fungible_token_core!(NftContract, token);
+near_contract_standards::impl_non_fungible_token_approval!(NftContract, token);
+near_contract_standards::impl_non_fungible_token_enumeration!(NftContract, token);
