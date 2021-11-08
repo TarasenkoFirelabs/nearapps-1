@@ -1,9 +1,6 @@
-use near_sdk_sim::{call, view, deploy, init_simulator, ContractAccount, UserAccount, to_yocto, STORAGE_AMOUNT};
+use near_sdk_sim::{call, deploy, init_simulator, ContractAccount, UserAccount, to_yocto};
 use api::CallContract;
-//use crate::utils::init;
 use std::str;
-use near_sdk::serde_json::json;
-use near_sdk::AccountId;
 
 extern crate base64;
 use base64::encode;
@@ -34,11 +31,17 @@ pub fn init() -> (UserAccount, ContractAccount<CallContract>, UserAccount) {
 }
 
 #[test]
-fn simulate_log_analytics() {
+fn simulate_log_analytics_1() {
     let (root, contract, _) = init();
 
-    let initial = "ABC_DEFG_1233_234".to_string();
-    let encoded: String = encode(initial.clone());
+    let app_id = "some_id".to_string();
+    let action_id = "some_action_id".to_string();
+    let user_name = "some_user_name".to_string();
+    let initial = format!(
+        "app_id: {}, action_id: {}, user_name: {}",
+        app_id, action_id, user_name);
+    let encoded: String = format!("{}_{}_{}", encode(app_id), encode(action_id), encode(user_name));
+
     let result = call!(
         root,
         contract.log_analytics(encoded)
@@ -49,3 +52,52 @@ fn simulate_log_analytics() {
 
     assert_eq!(initial, decoded);
 }
+
+#[test]
+fn simulate_log_analytics_2() {
+    let (root, contract, _) = init();
+
+    let app_id = "another_id".to_string();
+    let action_id = "another_action_id".to_string();
+    let user_name = "another_user_name".to_string();
+    let initial = format!(
+        "app_id: {}, action_id: {}, user_name: {}",
+        app_id, action_id, user_name);
+    let encoded: String = format!("{}_{}_{}", encode(app_id), encode(action_id), encode(user_name));
+
+    let result = call!(
+        root,
+        contract.log_analytics(encoded)
+    );
+    result.assert_success();
+
+    let decoded: String = (*result.logs()[0]).to_string(); 
+
+    assert_eq!(initial, decoded);
+}
+
+#[should_panic]
+#[test]
+fn simulate_log_analytics_panic() {
+    let (root, contract, _) = init();
+
+    let app_id = "another_id".to_string();
+    let action_id = "another_action_id".to_string();
+    let user_name = "another_user_name".to_string();
+    let initial = format!(
+        "app_id: {}, action_id: {}, user_name: {}",
+        app_id, action_id, user_name);
+    let encoded: String = format!("{}_{}, {}", encode(app_id), encode(action_id), encode(user_name));
+
+    let result = call!(
+        root,
+        contract.log_analytics(encoded)
+    );
+    result.assert_success();
+
+    let decoded: String = (*result.logs()[0]).to_string(); 
+
+    assert_eq!(initial, decoded);
+}
+
+
