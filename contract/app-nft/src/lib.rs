@@ -26,13 +26,17 @@ use near_sdk::{
     collections::LazyOption, env, ext_contract, near_bindgen, serde_json::json, AccountId,
     BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue, PromiseResult,
 };
-
 use std::convert::*;
+
+//sdk init
 near_sdk::setup_alloc!();
 
+//Constants
 pub const TOKEN_DELIMETER: char = ':';
 pub const TITLE_DELIMETER: &str = " #";
 pub const EDITION_DELIMETER: &str = "/";
+pub const GAS_FOR_ROYALTIES: Gas = 0;
+pub const NO_DEPOSIT: Balance = 0;
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -47,7 +51,6 @@ pub struct NftContract {
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
     NonFungibleToken,
-    TokenAccountMapping,
     TokenMetadata,
     TokenSeriesById,
     Enumeration,
@@ -80,8 +83,7 @@ trait ExtSelf {
     fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
 }
 
-const GAS_FOR_ROYALTIES: Gas = 0;
-const NO_DEPOSIT: Balance = 0;
+
 
 #[near_bindgen]
 impl NonFungibleTokenMetadataProvider for NftContract {
@@ -153,6 +155,7 @@ impl NftContract {
         );
     }
 }
+
 near_contract_standards::impl_non_fungible_token_core!(NftContract, token);
 near_contract_standards::impl_non_fungible_token_approval!(NftContract, token);
 near_contract_standards::impl_non_fungible_token_enumeration!(NftContract, token);

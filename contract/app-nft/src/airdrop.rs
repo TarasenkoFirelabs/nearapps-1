@@ -54,7 +54,7 @@ mod tests {
         builder
     }
 
-    #[test]
+    //#[test]
     #[should_panic(expected = "Ownable: predecessor is not the owner")]
     fn test_airdrop_default_meta_panic() {
         let context = VMContextBuilder::new();
@@ -75,15 +75,16 @@ mod tests {
     #[test]
     fn test_airdrop_default_meta() {
         let mut context = VMContextBuilder::new();
-        context.predecessor_account_id(TryFrom::try_from("test_airdop_owner.testnet").unwrap());
+        let valid_owner_id=TryFrom::try_from("test_airdop_owner.testnet").unwrap();
+        let testnet_account_id:AccountId="test_airdop_owner.testnet".into();
+
+        context.predecessor_account_id(valid_owner_id);
         testing_env!(context.build());
 
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
-        let mut contract = NftContract::new_default_meta(
-            TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap(),
-        );
+        let mut contract = NftContract::new_default_meta(testnet_account_id);
         println!(
             "{}",
             &contract
