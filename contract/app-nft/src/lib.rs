@@ -23,6 +23,7 @@ use near_sdk::json_types::ValidAccountId;
 use near_sdk::Balance;
 use near_sdk::Gas;
 use near_sdk::{
+
     collections::LazyOption, env, ext_contract, near_bindgen, serde_json::json, AccountId,
     BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue, PromiseResult,
 };
@@ -44,7 +45,6 @@ pub struct NftContract {
     token: NonFungibleToken,
     token_series: UnorderedMap<NftSeriesId, NftSeries>,
     owner_id: AccountId,
-    total_supply: u128,
     metadata: LazyOption<NFTContractMetadata>,
     pending_nft_rewards: LookupMap<AccountId, TokenId>,
 }
@@ -70,18 +70,7 @@ pub trait Ownable {
     fn transfer_ownership(&mut self, owner: AccountId);
 }
 
-#[ext_contract(ext_self)]
-trait ExtSelf {
-    fn nft_mint(
-        &mut self,
-        token_id: TokenId,
-        receiver_id: ValidAccountId,
-        metadata: TokenMetadata,
-    ) -> Promise;
 
-    fn nft_tokens(&self, from_index: Option<U128>, limit: Option<u64>) -> Vec<Token>;
-    fn nft_supply_for_owner(self, account_id: ValidAccountId) -> U128;
-}
 
 
 
@@ -129,7 +118,7 @@ impl NftContract {
             token_series: UnorderedMap::new(StorageKey::TokenSeriesById),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
             pending_nft_rewards: LookupMap::new(StorageKey::PendingRewards),
-            total_supply: 0,
+           // total_supply: 0,
         }
     }
     pub fn nft_transfer_unsafe(
