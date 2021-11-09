@@ -11,7 +11,7 @@ pub struct AirdropRewards(pub Vec<AirdropReward>);
 #[serde(crate = "near_sdk::serde")]
 pub struct AirdropReward {
     pub account_id: AccountId,
-    pub token_id:TokenId,
+    pub token_id: TokenId,
 }
 
 pub trait SupportsAirdrop {
@@ -38,7 +38,7 @@ impl SupportsAirdrop for NftContract {
         }
     }
 }
-
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -84,7 +84,38 @@ mod tests {
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
+<<<<<<< HEAD
         let mut contract = NftContract::new_default_meta(testnet_account_id);
+=======
+        let mut contract = NftContract::new_default_meta(
+            TryFrom::try_from(owner.clone()).unwrap(),
+        );
+        println!(
+            "{}",
+            &contract
+                .token
+                .tokens_per_owner
+                .as_ref()
+                .unwrap()
+                .contains_key(&owner)
+        );
+        near_sdk::env::attached_deposit() 
+        let token_meta = TokenMetadata{
+            title: Some("TestMetadata".to_string()),
+            description: None, 
+            media: None, 
+            media_hash: None, ;./,;'
+            copies: None, 
+            issued_at: None, 
+            expires_at: None, 
+            starts_at: None, 
+            updated_at: None, 
+            extra: None, 
+            reference: None, 
+            reference_hash: None, 
+        };
+        contract.nft_mint("New_test_token".to_string(), TryFrom::try_from(owner.clone()).unwrap(), token_meta);
+>>>>>>> 58066b8 (Changes in sim tests)
         println!(
             "{}",
             &contract
@@ -107,5 +138,53 @@ mod tests {
         contract.add_pending_rewards(vec![(owner, token_id)]);
         contract.airdrop(rewards);
     }
-}
+}  
+
+mod tests{
+    use super::*;
+    use near_sdk_sim::{call, view, deploy, init_simulator, ContractAccount, UserAccount, to_yocto};
+    use app::NftContract;
+
+    near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
+        AIRDROP_BYTES => "../res/app.wasm",
+    }
+
+    const CONTRACT_ID: &str = "contract";
+
+    pub fn init() -> (UserAccount, ContractAccount<NftContract>, UserAccount) {
+        // Use `None` for default genesis configuration; more info below
+        let root = init_simulator(None);
+    
+        let contract = deploy!(
+            contract: CallContract,
+            contract_id: CONTRACT_ID,
+            bytes: &AIRDROP_BYTES,
+            signer_account: root
+        );
+    
+        let alice = root.create_user(
+            "alice".parse().unwrap(),
+            to_yocto("100") // initial balance
+        );
+    
+        (root, contract, alice)
+    }
+
+    //#[test]
+    #[should_panic(expected = "Ownable: predecessor is not the owner")]
+    fn simulate_airdrop_default_meta_panic() {
+        let (root, contract, alice) = init();
+
+        let owner = root.account_id;
+        let result = call!(
+            root,
+            contract.new_default_meta(TryFrom::try_from(owner.clone()).unwrap()),
+            deposit = 100;
+        );
+        result.assert_success();
+    
+        
+    } */
+    
+
 
