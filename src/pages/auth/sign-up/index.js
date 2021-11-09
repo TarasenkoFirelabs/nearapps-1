@@ -2,13 +2,13 @@ import { Button } from "antd";
 import { Colors, Icons } from '../../../utils';
 import Image from "next/image";
 import React, { useState, useContext, useEffect } from 'react';
-import { initNear, hasKey } from "../../../state/near";
+// import { initNear, hasKey } from "../../../state/near_old";
 // import { appStore, onAppMount } from '../../../state/app';
 
 function SignUp() {
 
   
-  initNear();
+  //initNear();
 
   // const { state, dispatch, update } = useContext(appStore);
 
