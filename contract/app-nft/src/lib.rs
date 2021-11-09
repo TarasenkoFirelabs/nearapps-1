@@ -47,6 +47,7 @@ pub struct NftContract {
     owner_id: AccountId,
     metadata: LazyOption<NFTContractMetadata>,
     pending_nft_rewards: LookupMap<AccountId, TokenId>,
+    total_supply :u128,
 }
 #[derive(BorshSerialize, BorshStorageKey)]
 enum StorageKey {
@@ -118,7 +119,7 @@ impl NftContract {
             token_series: UnorderedMap::new(StorageKey::TokenSeriesById),
             metadata: LazyOption::new(StorageKey::Metadata, Some(&metadata)),
             pending_nft_rewards: LookupMap::new(StorageKey::PendingRewards),
-           // total_supply: 0,
+            total_supply: 0,
         }
     }
     pub fn nft_transfer_unsafe(

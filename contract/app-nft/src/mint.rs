@@ -11,7 +11,7 @@ impl NftContract {
     ) -> TokenId {
         self.assert_owner();
         let token = self.token.mint(token_id, receiver_id, Some(metadata));
-        //self.total_supply +=1;
+        self.total_supply +=1;
 
         token.token_id
     }
@@ -51,12 +51,12 @@ impl NftContract {
 
         assert!(
             total_accounts <= 10,
-            "NearNftComponent: royalty exceeds 10 accounts"
+            "Near Apps: royalty exceeds 10 accounts"
         );
 
         assert!(
             total <= 9000,
-            "NearNftComponent Exceeds maximum royalty -> 9000",
+            "Near Apps Exceeds maximum royalty -> 9000",
         );
 
         let price_res: Option<u128> = if price.is_some() {
