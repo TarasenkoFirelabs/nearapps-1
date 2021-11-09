@@ -21,6 +21,20 @@ const ConfirmCode = () => {
 
     }
 
+    const handleFocus = (e, key: number) => {
+
+        let index: number = e.key !== 'Backspace'
+            ? key + 1
+            : key - 1
+
+        const nextField: HTMLInputElement = document.querySelector(
+            `input[name=verifyCell-${index}]`
+        );
+
+        if (nextField) {
+            nextField.focus();
+        }
+    }
 
     const getInputCells = () => {
         return code.map( (item, key) => {
@@ -28,7 +42,8 @@ const ConfirmCode = () => {
                 <form className='padding-5' key={ key }>
                     <InputNumberCell
                         onChange={ (e) => handleChange(e, key) }
-                        name='verifyCell'
+                        handleFocus={ (e) => handleFocus(e, key) }
+                        name={`verifyCell-${ key }`}
                     />
                 </form>
             )
