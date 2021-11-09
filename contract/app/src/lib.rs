@@ -235,19 +235,21 @@ impl NearApps {
 
 mod sim_tests {
     use near_sdk_sim::{call, deploy, init_simulator, ContractAccount, UserAccount, to_yocto};
-    use app::NearAppsContract;
     use std::str;
+
+    //extern crate app;
+    use app::NearAppsContract;
 
     extern crate base64;
     use base64::encode;
 
     near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
-        ANALYTICS_BYTES => "res/app.wasm",
+        ANALYTICS_BYTES => "../target/wasm32-unknown-unknown/release/app.wasm",
     }
 
     const CONTRACT_ID: &str = "contract";
 
-    pub fn init() -> (UserAccount, ContractAccount<CallContract>, UserAccount) {
+    pub fn init() -> (UserAccount, ContractAccount<NearAppsContract>, UserAccount) {
         // Use `None` for default genesis configuration; more info below
         let root = init_simulator(None);
 
@@ -335,4 +337,4 @@ mod sim_tests {
 
         assert_eq!(initial, decoded);
     }
-}
+} 
