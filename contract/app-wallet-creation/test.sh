@@ -1,3 +1,3 @@
 #!/bin/bash
-[ ! -d "../target" ] && ./build.sh # build before testing
+[ ! -f "res/app_wallet_creation.wasm" ] && sh build.sh # build before testing
 cargo test -- --nocapture
