@@ -22,14 +22,13 @@ const ConfirmCode = () => {
 
     }
 
-    const handleFocus = (e, key: number) => {
+    const handleFocus = (e: React.KeyboardEvent<HTMLInputElement>, key: number) => {
 
         let index: number = e.key !== 'Backspace'
             ? key + 1
             : key - 1
 
-        // @ts-ignore
-        const nextField: HTMLInputElement = document.querySelector(
+        const nextField: HTMLInputElement | null = document.querySelector(
             `input[name=verifyCell-${index}]`
         );
 
@@ -39,7 +38,7 @@ const ConfirmCode = () => {
     }
 
     const getInputCells = () => {
-        return code.map( (item, key) => {
+        return code.map( (_item, key) => {
             return (
                 <form className='padding-5' key={ key }>
                     <InputNumberCell
@@ -88,7 +87,7 @@ const ConfirmCode = () => {
                 <a href='#'>{'Send to different email address'}</a>
             </div>
             <div className={ styles.textButton }>
-                <Button text={'Resend your code'} textColor={ Colors.primary }/>
+                <Button text={'Resend your code'} textColor={ Colors.primary } />
             </div>
         </div>
     )

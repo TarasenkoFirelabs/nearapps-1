@@ -2,7 +2,15 @@ import React from "react";
 import { Colors } from "../../utils";
 import styles from './Button.module.sass';
 
-const Button = ({ text, backgroundColor = 'transparent', textColor = Colors.grey, disabled = false }) => {
+interface IButtonProps {
+    text: any,
+    backgroundColor?: any,
+    textColor?: any,
+    disabled?: any
+}
+
+
+const Button = ({ text, backgroundColor = 'transparent', textColor = Colors.grey, disabled = false } : IButtonProps) => {
     return (
         <button
             className={ styles.button }

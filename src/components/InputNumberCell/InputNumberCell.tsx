@@ -1,7 +1,13 @@
-import React from "react";
+import React, { ChangeEventHandler, KeyboardEventHandler } from "react";
 import styles from './InputNumberCell.module.sass';
 
-const InputNumberCell = ({ onChange = null, handleFocus = null, name }) => {
+interface IInputNumberCellProps {
+    onChange?: ChangeEventHandler<HTMLInputElement>
+    handleFocus?: KeyboardEventHandler<HTMLInputElement>
+    name: string
+}
+
+const InputNumberCell = ({ onChange, handleFocus, name }: IInputNumberCellProps) => {
 
     return (
         <div>
