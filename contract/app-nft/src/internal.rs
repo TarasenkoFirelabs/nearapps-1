@@ -44,22 +44,21 @@ pub(crate) fn promise_is_succeeded() -> bool {
     }
 }
 
-    pub(crate) fn refund_deposit(storage_used: u64, extra_spend: Balance) {
-        let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
-        let attached_depo = env::attached_deposit() - extra_spend;
+pub(crate) fn refund_deposit(storage_used: u64, extra_spend: Balance) {
+    let required_cost = env::storage_byte_cost() * Balance::from(storage_used);
+    let attached_depo = env::attached_deposit() - extra_spend;
 
-        assert!(
-            required_cost <= attached_depo,
-            "Must attach {} some yocto to cover storage",
-            required_cost,
-        );
+    assert!(
+        required_cost <= attached_depo,
+        "Must attach {} some yocto to cover storage",
+        required_cost,
+    );
 
-        let refund = attached_depo - required_cost;
-        if refund > 1 {
-            Promise::new(env::predecessor_account_id()).transfer(refund);
-        }
+    let refund = attached_depo - required_cost;
+    if refund > 1 {
+        Promise::new(env::predecessor_account_id()).transfer(refund);
     }
-
+}
 
 #[near_bindgen]
 impl Ownable for NftContract {

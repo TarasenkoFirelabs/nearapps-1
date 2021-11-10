@@ -1,16 +1,5 @@
 use crate::*;
 
-use near_contract_standards::non_fungible_token::{
-    metadata::{
-        NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
-    },
-    Token, TokenId,
-};
-use near_sdk::{
-    collections::LazyOption, env, ext_contract, near_bindgen, serde_json::json, AccountId,
-    BorshStorageKey, PanicOnDefault, Promise, PromiseOrValue, PromiseResult,
-};
-
 impl NftContract {
     pub fn nft_token(&self, token_id: TokenId) -> Option<Token> {
         let owner_id = self.token.owner_by_id.get(&token_id)?;
@@ -25,7 +14,13 @@ impl NftContract {
         let token_series_id = token_id_iter.next().unwrap().parse().unwrap();
         let series_metadata = self.token_series.get(&token_series_id).unwrap().metadata;
 
-        let mut token_metadata = self.token.token_metadata_by_id.as_ref().unwrap().get(&token_id).unwrap();
+        let mut token_metadata = self
+            .token
+            .token_metadata_by_id
+            .as_ref()
+            .unwrap()
+            .get(&token_id)
+            .unwrap();
 
         token_metadata.title = Some(format!(
             "{}{}{}",
@@ -46,10 +41,8 @@ impl NftContract {
         })
     }
 
-    pub fn nft_total_supply(&self) -> u128 {
-        self.total_supply
-    }
-    pub fn nft_tokens(&self, from_index: Option<u128>, limit: Option<u64>) -> Vec<Token> {
+    
+    pub fn nft_tokens(&self, from_index: Option<U128>, limit: Option<u64>) -> Vec<Token> {
         let start_index: u128 = from_index.map(From::from).unwrap_or_default();
         assert!(
             (self.token.owner_by_id.len() as u128) > start_index,
@@ -66,18 +59,8 @@ impl NftContract {
             .collect()
     }
 
-    pub fn nft_supply_by_owner(self, account_id: ValidAccountId) -> u128 {
-        let tokens_per_owner = self.token.tokens_per_owner.expect(
-            "Could not find tokens_per_owner when calling a method on the enumeration standard.",
-        );
-        tokens_per_owner
-            .get(account_id.as_ref())
-            .map(|account_tokens| u128::from(account_tokens.len() as u128))
-            .unwrap_or(0)
-    }
-
     pub fn nft_tokens_by_owner(
-       &self,
+        &self,
         account_id: ValidAccountId,
         from_index: Option<U128>,
         limit: Option<u64>,
@@ -103,5 +86,61 @@ impl NftContract {
             .take(limit)
             .map(|token_id| self.nft_token(token_id).unwrap())
             .collect()
+    }
+    //SERIES
+    pub fn nft_get_series(
+        &self,
+        from_index: Option<U128>,
+        limit: Option<u64>,
+    ) -> Vec<NftSeriesJson> {
+        let start_index: u128 = from_index.map(From::from).unwrap_or_default();
+        assert!(
+            (self.token_series.len() as u128) > start_index,
+            "Out of bounds, please use a smaller from_index."
+        );
+        let limit = limit.map(|v| v as usize).unwrap_or(usize::MAX);
+        assert_ne!(limit, 0, "Cannot provide limit of 0.");
+
+        self.token_series
+            .iter()
+            .skip(start_index as usize)
+            .take(limit)
+            .map(|(token_series_id, token_series)| NftSeriesJson {
+                series_id: token_series_id,
+                metadata: token_series.metadata,
+                creator_id: token_series.creator_id,
+                royalty: token_series.royalty,
+            })
+            .collect()
+    }
+
+    pub fn nft_get_series_byid(&self, series_id: NftSeriesId) -> NftSeriesJson {
+		let token_series = self.token_series.get(&series_id).expect("Series does not exist");
+		NftSeriesJson{
+            series_id,
+			metadata: token_series.metadata,
+			creator_id: token_series.creator_id,
+            royalty: token_series.royalty,
+		}
+	}
+
+    pub fn nft_supply_for_series(&self, token_series_id: NftSeriesId) -> u64 {
+        self.token_series
+            .get(&token_series_id)
+            .expect("Token series does not exist")
+            .tokens
+            .len()
+            .into()
+    }
+    pub fn nft_get_series_format(self) -> (char, &'static str, &'static str) {
+        (TOKEN_DELIMETER, TITLE_DELIMETER, EDITION_DELIMETER)
+    }
+
+    pub fn nft_get_series_price(self, token_series_id: NftSeriesId) -> Option<u128> {
+        let price = self.token_series.get(&token_series_id).unwrap().price;
+        match price {
+            Some(p) => return Some(u128::from(p)),
+            None => return None,
+        };
     }
 }
