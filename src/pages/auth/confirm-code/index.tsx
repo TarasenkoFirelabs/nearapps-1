@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import { Icons, Colors } from '../../../utils';
 import styles from './ConfirmCode.module.sass';
 import InputNumberCell from "../../../components/InputNumberCell";
@@ -9,6 +9,21 @@ const ConfirmCode = () => {
     // @ts-ignore
     const [isPhoneNumber, setIsPhoneNumber] = useState<boolean>(false);
     const [code, setCode] = useState<any[]>(new Array(6).fill(''));
+    const [isValid, setIsValid] = useState(false)
+
+    const validate = useCallback(() => {
+        let isValid = true;
+
+        if (!code.join('')) {
+            isValid = false
+        }
+
+        setIsValid(isValid);
+    },[code])
+
+    useEffect(() => {
+        validate()
+    }, [validate])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, key: number) => {
         const { value } = e.target;
@@ -82,7 +97,8 @@ const ConfirmCode = () => {
                         onClick={ submitCode }
                         text={'Verify & Continue'}
                         backgroundColor={ Colors.blue }
-                        textColor={ Colors.grey }
+                        textColor={ Colors.white }
+                        disabled={ !isValid }
                     />
                 </div>
                 <div className='flexInlineCenter padding-10-0-0'>
