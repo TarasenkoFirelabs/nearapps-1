@@ -1,11 +1,29 @@
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import styles from './Registration.module.sass';
 import OutlinedInput from "../../../components/OutlinedInput";
 import Button from "../../../components/Button";
 import { Colors } from "../../../utils";
 
+const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>\/?]*$/
+
 const Registration = () => {
     const [accountID, setAccountID] = useState('');
+    const [isValid, setIsValid] = useState(false)
+
+    const validate = useCallback(() => {
+        let isValid = true;
+        let checkAccountIDReg = regExpression.test(accountID)
+
+        if (!checkAccountIDReg|| !accountID) {
+            isValid = false
+        }
+
+        setIsValid(isValid);
+    },[accountID])
+
+    useEffect(() => {
+        validate()
+    }, [validate])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
@@ -51,7 +69,7 @@ const Registration = () => {
                         text='Create'
                         textColor={ Colors.white }
                         backgroundColor={ Colors.blue }
-                        disabled={ !accountID }
+                        disabled={ !isValid }
                     />
                 </div>
                 <div className={ styles.registrationUnderBody1 }>
