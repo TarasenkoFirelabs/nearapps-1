@@ -1,5 +1,5 @@
 
-import copy from 'copy-to-clipboard';
+import copy from "copy-to-clipboard";
 
 export const share = (text) => {
     if (navigator.share) {
