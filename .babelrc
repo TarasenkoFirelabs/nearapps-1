@@ -1,6 +1,0 @@
-{
-    "plugins": [
-        ["dynamic-import-node", { "noInterop": true }]
-    ]
-}
-  

@@ -1,0 +1,87 @@
+{
+  "name": "tag-api-call",
+  "description": "Tag Analitics Contract\n\nThis project contains implementation of log backed by blockchain, written in Rust.",
+  "version": "0.1.0",
+  "license": "(MIT AND Apache-2.0)",
+  "scripts": {
+    "build": "yarn build:contract && yarn build:web",
+    "build:contract": "set -e & cd ../ && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
+    "postbuild:contract": "cp contract/target/wasm32-unknown-unknown/release/*.wasm res/",
+    "deploy:contract": "near dev-deploy ./res/api_call.wasm && cp ./neardev/dev-account.env .env && echo '\nNODE_ENV=testnet' >> .env",
+    "build:web": "parcel build index.html --public-url ./",
+    "deploy": "yarn build && yarn deploy:contract && gh-pages -d dist/",
+    "dev": "yarn build:contract && yarn deploy:contract && nodemon --watch assembly -e ts --exec yarn dev:start",
+    "lint": "eslint \"./**/*.js\" \"./**/*.jsx\"",
+    "start": "yarn deploy && parcel index.html",
+    "dev:start": "yarn build:web && env-cmd parcel src/index.html --open",
+    "test": "yarn build:contract && asp && jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.2",
+    "@babel/preset-react": "^7.13.13",
+    "@parcel/transformer-sass": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
+    "babel-jest": "^27.3.1",
+    "eslint": "^7.26.0",
+    "gh-pages": "^3.1.0",
+    "jest": "^27.3.1",
+    "jest-environment-node": "^27.3.1",
+    "near-cli": "^2.0.0",
+    "near-sdk-as": "3.2.3",
+    "nodemon": "^2.0.7",
+    "parcel": "^2.0.0",
+    "react-test-renderer": "^17.0.2",
+    "sass": "^1.32.13",
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "@amcharts/amcharts5": "^5.0.0-beta.39",
+    "big.js": "^6.1.1",
+    "env-cmd": "^10.1.0",
+    "near-api-js": "^0.41.0",
+    "prop-types": "^15.7.2",
+    "react": "^17.0.2",
+    "react-alert": "^7.0.3",
+    "react-dom": "^17.0.2",
+    "react-multivalue-text-input": "^1.0.0",
+    "regenerator-runtime": "^0.13.7"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "jest": {
+    "projects": [
+      {
+        "displayName": "User interface tests",
+        "testEnvironment": "jsdom",
+        "testMatch": [
+          "<rootDir>/src/tests/ui/*.js"
+        ]
+      },
+      {
+        "displayName": "Integration tests",
+        "testEnvironment": "near-cli/test_environment",
+        "testMatch": [
+          "<rootDir>/src/tests/integration/*.js"
+        ]
+      }
+    ],
+    "testPathIgnorePatterns": [
+      "assembly/*"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
