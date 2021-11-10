@@ -18,12 +18,12 @@ pub fn init() -> (UserAccount, ContractAccount<NftContractContract>, UserAccount
     // Use `None` for default genesis configuration; more info below
     let root = init_simulator(None);
 
-    let contract = deploy!(
+    let contract = deploy! {
         contract: NftContractContract,
         contract_id: CONTRACT_ID,
         bytes: &AIRDROP_BYTES,
         signer_account: root
-    );
+    };
 
     let alice = root.create_user(
         "alice".parse().unwrap(),
@@ -63,6 +63,4 @@ fn simulate_airdrop_default_meta() {
         contract.nft_mint("New_test_token".to_string(), valid_account, token_meta),
         gas = DEFAULT_GAS
     };
-
-
 }
