@@ -84,9 +84,6 @@ mod tests {
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
-<<<<<<< HEAD
-        let mut contract = NftContract::new_default_meta(testnet_account_id);
-=======
         let mut contract = NftContract::new_default_meta(
             TryFrom::try_from(owner.clone()).unwrap(),
         );
@@ -115,7 +112,6 @@ mod tests {
             reference_hash: None, 
         };
         contract.nft_mint("New_test_token".to_string(), TryFrom::try_from(owner.clone()).unwrap(), token_meta);
->>>>>>> 58066b8 (Changes in sim tests)
         println!(
             "{}",
             &contract

@@ -109,7 +109,6 @@ impl NftContract {
                 series_id: token_series_id,
                 metadata: token_series.metadata,
                 creator_id: token_series.creator_id,
-                royalty: token_series.royalty,
             })
             .collect()
     }
@@ -120,7 +119,6 @@ impl NftContract {
             series_id,
 			metadata: token_series.metadata,
 			creator_id: token_series.creator_id,
-            royalty: token_series.royalty,
 		}
 	}
 
