@@ -76,10 +76,9 @@ class Auth extends Storage<Locals> {
         return this.wallet
     }
 
-    signIn = (callback: () => void) => {
-        if (this.wallet) {
-            this.wallet.requestSignIn(contractName, 'Blah Blah');
-            callback()
+    signIn = (successRedirectUrl: string, failedRedirectUrl: string) => {
+        if (this.wallet) { 
+            this.wallet.requestSignIn(contractName, 'Blah Blah', successRedirectUrl, failedRedirectUrl);
         }
     }
         

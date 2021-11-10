@@ -1,28 +1,15 @@
 import { Button } from "antd";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/router'
+import React, { useState } from "react";
 import { Colors, Icons } from "../../../utils";
 import { AuthStore } from "../../../stores/AuthStore";
 import { observer } from "mobx-react";
 import { toJS } from "mobx";
 
 const SignUp = observer(() => {
-  const router = useRouter();
   const { wallet, signIn } = AuthStore;
   const [inputType, setInputType] = useState("email");
   const walletData = toJS(wallet);
-
-  const { query } = useRouter();
-
-  useEffect(() => {
-    // const { account_id, public_key, all_keys } = router.query;
-
-    
-
-    console.log(query);
-
-  }, [])
 
   const handleInputType = (type) => {
     setInputType(type);
@@ -111,10 +98,9 @@ const SignUp = observer(() => {
           <Button
             className="SignUp__formContainer-loginButton"
             onClick={() => {
-              signIn(() => {
-                console.log("cb:  /auth/registration");
-                router.push("/auth/registration")
-              });
+              const successRedirectUrl = (process.env.REACT_APP_HOST || "http://localhost:3000/") + 'auth/registration';
+              const failedRedirectUrl = (process.env.REACT_APP_HOST || "http://localhost:3000/") + 'auth/sign-up';
+              signIn(successRedirectUrl, failedRedirectUrl)
             }}
           >
             Log in with NEAR
