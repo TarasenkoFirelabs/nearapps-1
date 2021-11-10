@@ -1,9 +1,8 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { Icons, Colors } from '../../../utils';
-import styles from "../../../../styles/ConfirmCode.module.sass";
+import styles from './ConfirmCode.module.sass';
 import InputNumberCell from "../../../components/InputNumberCell";
-import SubmitButton from "../../../components/SubmitButton";
 import Button from "../../../components/Button";
 
 const ConfirmCode = () => {
@@ -22,14 +21,13 @@ const ConfirmCode = () => {
 
     }
 
-    const handleFocus = (e, key: number) => {
+    const handleFocus = (e: React.KeyboardEvent<HTMLInputElement>, key: number) => {
 
         let index: number = e.key !== 'Backspace'
             ? key + 1
             : key - 1
 
-        // @ts-ignore
-        const nextField: HTMLInputElement = document.querySelector(
+        const nextField: HTMLInputElement | null = document.querySelector(
             `input[name=verifyCell-${index}]`
         );
 
@@ -38,8 +36,12 @@ const ConfirmCode = () => {
         }
     }
 
+    const submitCode = () => {
+
+    }
+
     const getInputCells = () => {
-        return code.map( (item, key) => {
+        return code.map( (_item, key) => {
             return (
                 <form className='padding-5' key={ key }>
                     <InputNumberCell
@@ -53,42 +55,49 @@ const ConfirmCode = () => {
     }
 
     return (
-        <div className='textCenter'>
-            <div className='flexInlineCenter'>
-                <Image className="SignUp__logoContainer-row-logo" src={ Icons.nearLogoBlack } alt="Near Logo" width="100px" height="50%" />
-                <div className="logoContainerLabs ml-3">{'labs'}</div>
-            </div>
-            <hr className={ styles.horizontalLine1 }/>
-            <p className={ styles.verificationTitle }>
-                {'Enter Verification Code'}
-            </p>
-            <div className={ styles.verificationBody }>
-                {'We\'ve sent a 6-digit verification code to'} &#160;
-                { isPhoneNumber ? 'phone number' : 'the email address'}
-            </div>
-            <div className={ styles.verificationCredentials }>{ isPhoneNumber ? '+380634567543' : 'test@gmail.com' }</div>
-            <div className={ styles.verificationSubBody }>
-                {'Enter verification code'}
-            </div>
+        <div className={ styles.root }>
+            <div className={ styles.baseBody }>
+                <div className='flexInlineCenter'>
+                    <Image className="SignUp__logoContainer-row-logo" src={ Icons.nearLogoBlack } alt="Near Logo" width="100px" height="50%" />
+                    <div className="logoContainerLabs ml-3">{'labs'}</div>
+                </div>
+                <hr className={ styles.horizontalLine1 }/>
+                <p className={ styles.verificationTitle }>
+                    {'Enter Verification Code'}
+                </p>
+                <div className={ styles.verificationBody }>
+                    {'We\'ve sent a 6-digit verification code to'} &#160;
+                    { isPhoneNumber ? 'phone number' : 'the email address'}
+                </div>
+                <div className={ styles.verificationCredentials }>{ isPhoneNumber ? '+380634567543' : 'test@gmail.com' }</div>
+                <div className={ styles.verificationSubBody }>
+                    {'Enter verification code'}
+                </div>
 
-            <div className='flexInlineCenter'>
-                { getInputCells() }
-            </div>
-            <div className='flexInlineCenter padding-30-0-0'>
-                <SubmitButton text={'Verify & Continue'}/>
-            </div>
-            <div className='flexInlineCenter padding-10-0-0'>
-                <Button text={'Cancel'}/>
-            </div>
-            <hr className={ styles.horizontalLine2 } />
-            <div className='textSubBody-14 padding-10'>
-                <a href='#'>{'Didn\'t receive your code?'}</a>
-            </div>
-            <div className={ styles.textLink }>
-                <a href='#'>{'Send to different email address'}</a>
-            </div>
-            <div className={ styles.textButton }>
-                <Button text={'Resend your code'} textColor={ Colors.primary }/>
+                <div className='flexInlineCenter'>
+                    { getInputCells() }
+                </div>
+                <div className='flexInlineCenter padding-30-0-0'>
+                    <Button
+                        onClick={ submitCode }
+                        text={'Verify & Continue'}
+                        backgroundColor={ Colors.blue }
+                        textColor={ Colors.grey }
+                    />
+                </div>
+                <div className='flexInlineCenter padding-10-0-0'>
+                    <Button text={'Cancel'}/>
+                </div>
+                <hr className={ styles.horizontalLine2 } />
+                <div className='textSubBody-14 padding-10'>
+                    <a href='#'>{'Didn\'t receive your code?'}</a>
+                </div>
+                <div className={ styles.textLink }>
+                    <a href='#'>{'Send to different email address'}</a>
+                </div>
+                <div className={ styles.textButton }>
+                    <Button text={'Resend your code'} textColor={ Colors.primary } />
+                </div>
             </div>
         </div>
     )
