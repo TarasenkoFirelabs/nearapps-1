@@ -6,7 +6,7 @@ use std::convert::{TryFrom, TryInto};
 use near_sdk::json_types::ValidAccountId;
 
 extern crate app_nft;
-use app_nft::{NftContractContract, AirdropRewardsContract, AirdropRewardContract};
+use app_nft::{NftContractContract};
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
     AIRDROP_BYTES => "res/app_nft.wasm",
@@ -38,12 +38,9 @@ pub fn init() -> (UserAccount, ContractAccount<NftContractContract>, UserAccount
 fn simulate_airdrop_default_meta() {
     let (root, contract, alice) = init();
 
-    let owner = root.account_id;
-    let valid_account: ValidAccountId = owner.to_string().clone().try_into().unwrap();
+    let valid_account: ValidAccountId = root.account_id().clone().try_into().unwrap();
     let res = call!(
-        root,
-        NftContractContract::new_default_meta(valid_account).unwrap()
-    ).unwrap_json();
+        root, contract.new_default_meta(valid_account.to_string()));
 
     let token_meta = TokenMetadata{
         title: Some("TestMetadata".to_string()),
@@ -60,7 +57,7 @@ fn simulate_airdrop_default_meta() {
         reference_hash: None, 
     };
 
-    let valid_account: ValidAccountId = owner.to_string().clone().try_into().unwrap();
+    let valid_account: ValidAccountId = root.account_id().clone().try_into().unwrap();
     let res = call! {
         root,
         contract.nft_mint("New_test_token".to_string(), valid_account, token_meta),
