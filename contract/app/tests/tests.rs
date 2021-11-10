@@ -6,6 +6,7 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json::json;
 use near_sdk::{env, PendingContractTx};
 use near_sdk::{AccountId, PublicKey};
+use near_sdk_sim::transaction::ExecutionStatus;
 use near_sdk_sim::{
     call, deploy, init_simulator, lazy_static_include::syn::token::Use, to_yocto, view,
     ContractAccount, UserAccount, DEFAULT_GAS, STORAGE_AMOUNT,
@@ -89,8 +90,7 @@ fn simulate_fail_call() {
         near_apps.call(
             Vec::new(),
             status_id.clone(),
-            ContractArgs::new("set_status".to_string(), 
-            message.to_string())
+            ContractArgs::new("set_status".to_string(), message.to_string())
         ),
         gas = DEFAULT_GAS * 3
     );
@@ -130,9 +130,13 @@ fn simulate_wallet_call() {
     );
     let make_wallet_id = make_wallet.account_id;
     let account_id = "make_wallet_1".parse().unwrap();
-    let public_key = PublicKey::from_str("ed25519:8MtAwUtEuU18u9xrehUEBWgcziTHxFhXLNE9F5xq7ExU").unwrap();
-    let new_account = NewAccount{account_id, public_key};
-    let make_wallet_json = json!({"new_account": new_account});
+    let public_key =
+        PublicKey::from_str("ed25519:Bnsj1BXvhRaJuA316v5GWk6M5G3Wyq8ZEVJHtorXt1DP").unwrap();
+    let new_account = NewAccount {
+        account_id,
+        public_key,
+    };
+    let make_wallet_json = json!({ "new_account": new_account });
     let res = call!(
         near_apps.user_account,
         near_apps.add_contract(make_wallet_id.clone()),
@@ -147,9 +151,17 @@ fn simulate_wallet_call() {
     assert!(res.is_ok());
     let res = call!(
         near_apps.user_account,
-        near_apps.call(Vec::new(), make_wallet_id, ContractArgs::new("make_wallets".to_string(), make_wallet_json.to_string())),
-        to_yocto("1"), DEFAULT_GAS * 3
+        near_apps.call(
+            Vec::new(),
+            make_wallet_id,
+            ContractArgs::new("make_wallets".to_string(), make_wallet_json.to_string())
+        ),
+        to_yocto("1"),
+        DEFAULT_GAS * 3
     );
     println!("make_wallet called: {:#?}", res.promise_results());
     assert!(res.is_ok());
+    assert!(
+        matches!(&res.outcome().status, ExecutionStatus::SuccessValue(x) if x == &b"true".to_vec())
+    );
 }

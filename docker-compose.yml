@@ -16,5 +16,18 @@ services:
     volumes:
       - database-data:/var/lib/postgresql/data/
 
+  # mongodb:
+  #   image: mongo:latest
+  #   restart: always
+  #   container_name: "mongodb"
+  #   environment:
+  #     - MONGO_DATA_DIR=/db/data
+  #     - MONGO_LOG_DIR=/dev/null
+  #   volumes:
+  #     - ./db/data:/data/db
+  #   ports:
+  #     - 27017:27017
+  #   command: mongod --bind_ip_all --smallfiles --logpath=/dev/null # --quiet
+
 volumes:
   database-data:

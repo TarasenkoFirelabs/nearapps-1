@@ -1,12 +1,13 @@
 import Image from "next/image";
-import React, {createRef, useCallback, useRef, useState} from "react";
+import React, { useState } from "react";
 import { Icons, Colors } from '../../../utils';
-import styles from './ConfirmCode.module.sass';
+import styles from "../../../../styles/ConfirmCode.module.sass";
 import InputNumberCell from "../../../components/InputNumberCell";
 import SubmitButton from "../../../components/SubmitButton";
 import Button from "../../../components/Button";
 
 const ConfirmCode = () => {
+    // @ts-ignore
     const [isPhoneNumber, setIsPhoneNumber] = useState<boolean>(false);
     const [code, setCode] = useState<any[]>(new Array(6).fill(''));
 
@@ -27,6 +28,7 @@ const ConfirmCode = () => {
             ? key + 1
             : key - 1
 
+        // @ts-ignore
         const nextField: HTMLInputElement = document.querySelector(
             `input[name=verifyCell-${index}]`
         );
@@ -53,22 +55,16 @@ const ConfirmCode = () => {
     return (
         <div className='textCenter'>
             <div className='flexInlineCenter'>
-                    <Image
-                        className="SignUp__logoContainer-row-logo"
-                        alt=""
-                        src={ Icons.nearLogoBlack }
-                        width="100px"
-                        height="50%"
-                    />
-                    <div className="logoContainerLabs ml-3">{'labs'}</div>
+                <Image className="SignUp__logoContainer-row-logo" src={ Icons.nearLogoBlack } alt="Near Logo" width="100px" height="50%" />
+                <div className="logoContainerLabs ml-3">{'labs'}</div>
             </div>
             <hr className={ styles.horizontalLine1 }/>
             <p className={ styles.verificationTitle }>
                 {'Enter Verification Code'}
             </p>
             <div className={ styles.verificationBody }>
-                {'We have sent a 6-digit verification code to'} &#160;
-                { isPhoneNumber ? 'phone number' : 'email address'}
+                {'We\'ve sent a 6-digit verification code to'} &#160;
+                { isPhoneNumber ? 'phone number' : 'the email address'}
             </div>
             <div className={ styles.verificationCredentials }>{ isPhoneNumber ? '+380634567543' : 'test@gmail.com' }</div>
             <div className={ styles.verificationSubBody }>
