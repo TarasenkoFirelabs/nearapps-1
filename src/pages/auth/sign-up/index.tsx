@@ -2,6 +2,7 @@ import { Button } from "antd";
 import Image from "next/image";
 import React, { useState } from "react";
 import { Colors, Icons } from '../../../utils';
+import authStore from '../../../stores/authStore';
 
 function SignUp() {
 

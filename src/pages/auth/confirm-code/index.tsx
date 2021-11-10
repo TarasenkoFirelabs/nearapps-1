@@ -55,14 +55,8 @@ const ConfirmCode = () => {
     return (
         <div className='textCenter'>
             <div className='flexInlineCenter'>
-                    <Image
-                        className="SignUp__logoContainer-row-logo"
-                        alt=""
-                        src={ Icons.nearLogoBlack }
-                        width="100px"
-                        height="50%"
-                    />
-                    <div className="logoContainerLabs ml-3">{'labs'}</div>
+                <Image className="SignUp__logoContainer-row-logo" src={ Icons.nearLogoBlack } alt="Near Logo" width="100px" height="50%" />
+                <div className="logoContainerLabs ml-3">{'labs'}</div>
             </div>
             <hr className={ styles.horizontalLine1 }/>
             <p className={ styles.verificationTitle }>
