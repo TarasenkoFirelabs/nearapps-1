@@ -2,7 +2,7 @@ import { Button } from "antd";
 import Image from "next/image";
 import React, { useState } from "react";
 import { Colors, Icons } from '../../../utils';
-import authStore from '../../../stores/authStore';
+// import authStore from '../../../stores/authStore';
 
 function SignUp() {
 
@@ -56,8 +56,12 @@ function SignUp() {
             </Button>
           </div>
           <p className="SignUp__formContainer-form-term">by clicking continue you must agree to near labs<br />
-            <a style={{ color: 'lightblue' }}> Terms & Conditions</a> and
-            <a style={{ color: 'lightblue' }}>  Privacy Policy</a>
+            <a 
+              style={{ color: 'lightblue' }}
+              href="https://wallet.testnet.near.org/20210319-near-tcs.a776bb61.pdf"
+              target="_blank"> Terms &amp; Conditions
+            </a> and
+            <a style={{ color: 'lightblue' }} href="https://near.org/privacy/" target="_blank"> Privacy Policy</a>
           </p>
           <hr className='SignUp__formContainer-line' />
           <p className='SignUp__formContainer-textButton'>Already have Near Account?</p>
