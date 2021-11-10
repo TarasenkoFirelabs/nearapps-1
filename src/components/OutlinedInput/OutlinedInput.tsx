@@ -1,10 +1,15 @@
-import React from "react";
+import React, {ChangeEventHandler} from "react";
 import styles from './OutlinedInput.module.sass';
 
-const OutlinedInput = ({ onChange = null, label }) => {
+interface IOutlinedInputProps {
+    onChange?: ChangeEventHandler<HTMLInputElement>
+    label?: string
+}
+
+const OutlinedInput = ({ onChange, label }: IOutlinedInputProps) => {
 
     return (
-        <div className='flexColumnCenter'>
+        <div className={ styles.root }>
             <label htmlFor='outlined-input-1' className='textSubBody-12 padding-5-0'>
                 { label }
             </label>
