@@ -84,9 +84,7 @@ mod tests {
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
         let owner = "test_airdop_owner.testnet".to_string();
         //let valid_owner: ValidAccountId = TryFrom::try_from("test_airdop_owner.testnet".to_string()).unwrap();
-<<<<<<< HEAD
         let mut contract = NftContract::new_default_meta(testnet_account_id);
-=======
         let mut contract = NftContract::new_default_meta(
             TryFrom::try_from(owner.clone()).unwrap(),
         );
@@ -115,7 +113,6 @@ mod tests {
             reference_hash: None, 
         };
         contract.nft_mint("New_test_token".to_string(), TryFrom::try_from(owner.clone()).unwrap(), token_meta);
->>>>>>> 58066b8 (Changes in sim tests)
         println!(
             "{}",
             &contract
@@ -143,20 +140,22 @@ mod tests {
 mod tests{
     use super::*;
     use near_sdk_sim::{call, view, deploy, init_simulator, ContractAccount, UserAccount, to_yocto};
-    use app::NftContract;
+
+    extern crate app_nft;
+    use app_nft::NftContractContract;
 
     near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
-        AIRDROP_BYTES => "../res/app.wasm",
+        AIRDROP_BYTES => "../target/wasm32-unknown-unknown/release/app-nft.wasm",
     }
 
     const CONTRACT_ID: &str = "contract";
 
-    pub fn init() -> (UserAccount, ContractAccount<NftContract>, UserAccount) {
+    pub fn init() -> (UserAccount, ContractAccount<NftContractContract>, UserAccount) {
         // Use `None` for default genesis configuration; more info below
         let root = init_simulator(None);
     
         let contract = deploy!(
-            contract: CallContract,
+            contract: NftContractContract,
             contract_id: CONTRACT_ID,
             bytes: &AIRDROP_BYTES,
             signer_account: root
@@ -171,20 +170,37 @@ mod tests{
     }
 
     //#[test]
-    #[should_panic(expected = "Ownable: predecessor is not the owner")]
-    fn simulate_airdrop_default_meta_panic() {
+    //#[should_panic(expected = "Ownable: predecessor is not the owner")]
+    fn simulate_airdrop_default_meta() {
         let (root, contract, alice) = init();
 
         let owner = root.account_id;
-        let result = call!(
+        let res = call!(
             root,
-            contract.new_default_meta(TryFrom::try_from(owner.clone()).unwrap()),
-            deposit = 100;
-        );
-        result.assert_success();
-    
-        
-    } */
+            NftContractContract::new_default_meta(TryFrom::try_from(owner.clone()).unwrap()),
+        ).unwrap_json();
+
+        let token_meta = TokenMetadata{
+            title: Some("TestMetadata".to_string()),
+            description: None, 
+            media: None, 
+            media_hash: None,
+            copies: None, 
+            issued_at: None, 
+            expires_at: None, 
+            starts_at: None,
+            updated_at: None, 
+            extra: None, 
+            reference: None, 
+            reference_hash: None, 
+        };
+
+        call! {
+            contract.nft_mint("New_test_token".to_string(), TryFrom::try_from(owner.clone()).unwrap(), token_meta),
+            gas = DEFAULT_GAS
+        };   
+    } 
+} */
     
 
 
