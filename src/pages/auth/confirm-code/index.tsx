@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Icons, Colors } from '../../../utils';
 import styles from './ConfirmCode.module.sass';
 import InputNumberCell from "../../../components/InputNumberCell";
-import SubmitButton from "../../../components/SubmitButton";
 import Button from "../../../components/Button";
 
 const ConfirmCode = () => {
@@ -35,6 +34,10 @@ const ConfirmCode = () => {
         if (nextField) {
             nextField.focus();
         }
+    }
+
+    const submitCode = () => {
+
     }
 
     const getInputCells = () => {
@@ -75,7 +78,12 @@ const ConfirmCode = () => {
                     { getInputCells() }
                 </div>
                 <div className='flexInlineCenter padding-30-0-0'>
-                    <SubmitButton text={'Verify & Continue'}/>
+                    <Button
+                        onClick={ submitCode }
+                        text={'Verify & Continue'}
+                        backgroundColor={ Colors.blue }
+                        textColor={ Colors.grey }
+                    />
                 </div>
                 <div className='flexInlineCenter padding-10-0-0'>
                     <Button text={'Cancel'}/>
