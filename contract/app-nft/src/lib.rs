@@ -124,13 +124,12 @@ impl NftContract {
     }
     pub fn nft_transfer_unsafe(
         &mut self,
-        token_id: TokenId,
-        owner_id: AccountId,
-        receiver_id: AccountId,
+        token_id: &TokenId,
+        owner_id: &AccountId,
+        receiver_id: &AccountId,
     ) {
-        assert_self();
         self.token
-            .internal_transfer_unguarded(&token_id, &owner_id, &receiver_id);
+            .internal_transfer_unguarded(token_id, owner_id, receiver_id);
         env::log(
             json!({
                 "type": "nft_transfer",
@@ -144,15 +143,6 @@ impl NftContract {
             .as_bytes(),
         );
     }
-}
-
-#[ext_contract(ext_self)]
-pub trait ExtSelf {
-    fn nft_transfer_unsafe(&mut self,
-        token_id: TokenId,
-        owner_id: AccountId,
-        receiver_id: AccountId,
-    ) -> bool;
 }
 
 near_contract_standards::impl_non_fungible_token_core!(NftContract, token);

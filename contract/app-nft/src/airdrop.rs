@@ -2,7 +2,6 @@ use near_contract_standards::non_fungible_token::TokenId;
 use crate::*;
 use near_sdk::{AccountId};
 use near_sdk::serde::{Serialize, Deserialize};
-use near_sdk::env;
 
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -36,12 +35,7 @@ impl SupportsAirdrop for NftContract {
         self.assert_owner();
         for reward in rewards.0 {
             let account = reward.account_id.to_string();
-            ext_self::nft_transfer_unsafe(reward.token_id, 
-                self.owner(), 
-                account, 
-                &env::current_account_id(),
-                0,
-                env::prepaid_gas() / 3);
+            self.nft_transfer_unsafe(&reward.token_id, &self.owner(), &account);
         }
     }
 
