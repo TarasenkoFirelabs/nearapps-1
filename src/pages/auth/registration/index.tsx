@@ -7,14 +7,14 @@ import { Colors } from "../../../utils";
 const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>\/?]*$/
 
 const Registration = () => {
-    const [accountID, setAccountID] = useState('');
-    const [isValid, setIsValid] = useState(false)
+    const [accountID, setAccountID] = useState<string>('');
+    const [isValid, setIsValid] = useState<boolean>(false)
 
     const validate = useCallback(() => {
         let isValid = true;
         let checkAccountIDReg = regExpression.test(accountID)
 
-        if (!checkAccountIDReg|| !accountID) {
+        if (!checkAccountIDReg || accountID.length < 2) {
             isValid = false
         }
 
@@ -28,6 +28,15 @@ const Registration = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setAccountID(value);
+    }
+
+    const submitAccountID = async () => {
+        await fetch('http://example.com/api/endpoint/', {
+            method: "post",
+            body: JSON.stringify({
+                accountID,
+            })
+        })
     }
 
     return (
@@ -66,6 +75,7 @@ const Registration = () => {
                 </ul>
                 <div className='flexInlineCenter'>
                     <Button
+                        onClick={ submitAccountID }
                         text='Create'
                         textColor={ Colors.white }
                         backgroundColor={ Colors.blue }

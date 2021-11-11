@@ -9,12 +9,12 @@ const ConfirmCode = () => {
     // @ts-ignore
     const [isPhoneNumber, setIsPhoneNumber] = useState<boolean>(false);
     const [code, setCode] = useState<any[]>(new Array(6).fill(''));
-    const [isValid, setIsValid] = useState(false)
+    const [isValid, setIsValid] = useState<boolean>(false)
 
     const validate = useCallback(() => {
         let isValid = true;
 
-        if (!code.join('')) {
+        if (code.join('').length < 6) {
             isValid = false
         }
 
@@ -51,8 +51,13 @@ const ConfirmCode = () => {
         }
     }
 
-    const submitCode = () => {
-
+    const submitCode = async () => {
+        await fetch('http://example.com/api/endpoint/', {
+            method: "post",
+            body: JSON.stringify({
+                code: code.join(''),
+            })
+        })
     }
 
     const getInputCells = () => {
