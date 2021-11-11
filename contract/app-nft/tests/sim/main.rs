@@ -3,6 +3,7 @@ use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
 use near_contract_standards::non_fungible_token::NonFungibleToken;
 use near_contract_standards::non_fungible_token::TokenId;
 use std::str;
+//use near_sdk::env;
 
 use std::convert::{TryFrom, TryInto};
 use near_sdk::json_types::ValidAccountId;
@@ -76,17 +77,20 @@ fn simulate_airdrop_default_meta() {
     };
     let rewards = AirdropRewards(vec![reward]);
     
-    //let res = call!(
-    //    root, 
-    //    contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
-    //);
-    //res.assert_success();
-    //let res = call!(root, contract.airdrop(rewards));
-    //assert!(res.is_ok());
-    //let res: TokenId = view!(
-    //    contract.pending_rewards_by_key(root.account_id())
-    //).unwrap_json();
-    //assert!(res, token_id);
+    let res = call!(
+        root, 
+        contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
+    );
+    res.assert_success();
+    let res = call!(
+        root,
+        contract.airdrop(rewards)
+    );
+    res.assert_success();
+    let res: TokenId = view!(
+        contract.pending_rewards_by_key(&alice.account_id())
+    ).unwrap_json();
+    assert!(&res.eq(&token_id));
 }
 
 
