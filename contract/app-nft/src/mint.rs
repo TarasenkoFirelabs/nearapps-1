@@ -37,6 +37,7 @@ impl NftContract {
             "Near Apps: token_metadata.title is required"
         );
 
+
         self.token_series.insert(
             &series_id,
             &NftSeries {
@@ -51,7 +52,7 @@ impl NftContract {
                     .unwrap(),
                 ),
                 closed: false,
-                price: None,
+                price: price,
                 is_mintable: true,
             },
         );
