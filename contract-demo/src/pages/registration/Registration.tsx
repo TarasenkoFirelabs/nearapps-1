@@ -38,10 +38,14 @@ const Registration = ({ account, nearConfig, currentUser }) => {
 
     const submitAccountID = async () => {
       try {
-        const args = {"accountID": encode64_AccountID( accountID )};
+        const args = {
+          "tags": {"test": "test", "bla": "bla"},
+          "contract_name": accountID,
+          "args": {"make_wallet", ""}
+        };
         setIsValid(false)
 
-        callContract(account, nearConfig, 'make_wallet', args)
+        callContract(account, nearConfig, 'app', args)
           .then((txid) => {
             const link = `https://explorer.${nearConfig.networkId}.near.org/transactions/${txid}`;
             alert.show(link);
