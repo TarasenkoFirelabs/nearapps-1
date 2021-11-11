@@ -1,12 +1,16 @@
 use near_sdk_sim::{call, view, deploy, init_simulator, ContractAccount, UserAccount, to_yocto, DEFAULT_GAS};
 use near_contract_standards::non_fungible_token::metadata::TokenMetadata;
+use near_contract_standards::non_fungible_token::NonFungibleToken;
+use near_contract_standards::non_fungible_token::TokenId;
 use std::str;
-//use core::convert::TryFrom;
+
 use std::convert::{TryFrom, TryInto};
 use near_sdk::json_types::ValidAccountId;
 
 extern crate app_nft;
-use app_nft::{NftContractContract};
+use app_nft::NftContractContract;
+use app_nft::airdrop::{AirdropReward, AirdropRewards};
+use app_nft::airdrop::SupportsAirdrop;
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
     AIRDROP_BYTES => "res/app_nft.wasm",
@@ -15,12 +19,13 @@ near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
 const CONTRACT_ID: &str = "contract";
 
 pub fn init() -> (UserAccount, ContractAccount<NftContractContract>, UserAccount) {
-    // Use `None` for default genesis configuration; more info below
-    let root = init_simulator(None);
-
+    let mut genesis = near_sdk_sim::runtime::GenesisConfig::default();
+    genesis.gas_limit = u64::MAX;
+    genesis.gas_price = 0;
+    let root = init_simulator(Some(genesis));
     let contract = deploy! {
         contract: NftContractContract,
-        contract_id: CONTRACT_ID,
+        contract_id: "contract",
         bytes: &AIRDROP_BYTES,
         signer_account: root
     };
@@ -44,23 +49,42 @@ fn simulate_airdrop_default_meta() {
 
     let token_meta = TokenMetadata{
         title: Some("TestMetadata".to_string()),
-        description: None, 
-        media: None, 
+        description: None,
+        media: None,
         media_hash: None,
-        copies: None, 
-        issued_at: None, 
-        expires_at: None, 
+        copies: None,
+        issued_at: None,
+        expires_at: None,
         starts_at: None,
-        updated_at: None, 
-        extra: None, 
-        reference: None, 
-        reference_hash: None, 
+        updated_at: None,
+        extra: None,
+        reference: None,
+        reference_hash: None,
     };
 
     let valid_account: ValidAccountId = root.account_id().clone().try_into().unwrap();
-    let res = call! {
+    
+    let token_id: TokenId = call!(
         root,
         contract.nft_mint("New_test_token".to_string(), valid_account, token_meta),
-        gas = DEFAULT_GAS
+        deposit = to_yocto("0.59")
+    ).unwrap_json();
+    
+    let reward = AirdropReward {
+        account_id: alice.account_id().clone(),
+        token_id: token_id.clone(),
     };
+    let rewards = AirdropRewards(vec![reward]);
+    
+    let res = call!(
+        root, 
+        contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
+    );
+    res.assert_success();
+    //let res = call!(root, contract.airdrop(rewards));
+    //assert!(res.is_ok());
+    //let res: TokenId = view!(
+    //    contract.pending_rewards_by_key(root.account_id())
+    //).unwrap_json();
+    //assert!(res, token_id);
 }

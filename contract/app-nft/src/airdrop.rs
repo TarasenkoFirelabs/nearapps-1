@@ -17,9 +17,10 @@ pub struct AirdropReward {
 pub trait SupportsAirdrop {
     fn airdrop(&mut self, rewards: AirdropRewards);
     fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>);
-    //fn get_pending_ft_rewards() -> LookupMap<AccountId, Balance>;
+    fn pending_rewards_by_key(&self, account: &AccountId) -> TokenId;
 }
 
+#[near_bindgen]
 impl SupportsAirdrop for NftContract {
     fn add_pending_rewards(&mut self, rewards: Vec<(AccountId, TokenId)>) {
         self.assert_owner();
@@ -36,6 +37,10 @@ impl SupportsAirdrop for NftContract {
             let account = reward.account_id.to_string();
             self.nft_transfer_unsafe(&reward.token_id, &self.owner(), &account);
         }
+    }
+
+    fn pending_rewards_by_key(&self, account: &AccountId) -> TokenId {
+        self.pending_nft_rewards.get(&account).unwrap()
     }
 }
 /*
@@ -198,7 +203,7 @@ mod tests{
         call! {
             contract.nft_mint("New_test_token".to_string(), TryFrom::try_from(owner.clone()).unwrap(), token_meta),
             gas = DEFAULT_GAS
-        };   
+        }; 
     } 
 } */
     
