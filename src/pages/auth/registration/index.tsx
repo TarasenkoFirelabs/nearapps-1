@@ -3,6 +3,7 @@ import styles from './Registration.module.sass';
 import OutlinedInput from "../../../components/OutlinedInput";
 import Button from "../../../components/Button";
 import { Colors } from "../../../utils";
+import { postApi } from "../../../helpers/api";
 
 const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>\/?]*$/
 
@@ -30,12 +31,13 @@ const Registration = () => {
         setAccountID(value);
     }
 
-    const submitAccountID = async () => {
-        await fetch('http://example.com/api/endpoint/', {
-            method: "post",
-            body: JSON.stringify({
-                accountID,
-            })
+    const submitAccountID = () => {
+        postApi('http://example.com/api/endpoint/', {
+            accountID
+        }, {
+            mode: "no-cors",
+        }).then(res => {
+            console.log(res);
         })
     }
 

@@ -4,6 +4,7 @@ import { Icons, Colors } from '../../../utils';
 import styles from './ConfirmCode.module.sass';
 import InputNumberCell from "../../../components/InputNumberCell";
 import Button from "../../../components/Button";
+import { postApi } from "../../../helpers/api";
 
 const ConfirmCode = () => {
     // @ts-ignore
@@ -37,7 +38,6 @@ const ConfirmCode = () => {
     }
 
     const handleFocus = (e: React.KeyboardEvent<HTMLInputElement>, key: number) => {
-
         let index: number = e.key !== 'Backspace'
             ? key + 1
             : key - 1
@@ -51,12 +51,13 @@ const ConfirmCode = () => {
         }
     }
 
-    const submitCode = async () => {
-        await fetch('http://example.com/api/endpoint/', {
-            method: "post",
-            body: JSON.stringify({
-                code: code.join(''),
-            })
+    const submitCode = () => {
+        postApi('http://example.com/api/endpoint/', {
+            code: code.join('')
+        }, {
+            mode: "no-cors",
+        }).then(res => {
+            console.log(res)
         })
     }
 
