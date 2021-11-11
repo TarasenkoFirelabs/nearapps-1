@@ -5,18 +5,16 @@ interface IFabProps {
     onClick?: MouseEventHandler
     component?: ReactComponentElement<any>,
     backgroundColor?: string,
-    color?: string,
     disabled?: boolean
 }
 
-const Fab = ({ onClick, component, backgroundColor = 'transparent', color, disabled = false }: IFabProps) => {
+const Fab = ({ onClick, component, backgroundColor = 'transparent', disabled = false }: IFabProps) => {
 
     return (
        <button
            onClick={ onClick }
            className={ styles.fabButton }
            style={{ backgroundColor: backgroundColor }}
-           color={ color }
            disabled={ disabled }
        >
            { component }

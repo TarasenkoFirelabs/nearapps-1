@@ -2,9 +2,16 @@ import React, { useState } from "react";
 import styles from './CreateNft.module.sass';
 import CancelIcon from "../../assets/icons/CancelIcon";
 import Fab from "../../components/Fab";
+import DropZone from "../../components/DropZone";
 
 const CreateNft = () => {
+    // @ts-ignore
     const [step, setStep] = useState(1);
+
+    const handleChooseFile = (e) => {
+        console.log(e)
+
+    }
 
     return (
         <div className={ styles.root }>
@@ -22,8 +29,12 @@ const CreateNft = () => {
                 <div className='flexInlineCenter textSubBody-12 padding-10-0-0'>
                     {`STEP ${ step }  OF 2`}
                 </div>
-
-                <input type='file'/>
+                <div className={ styles.inputLabel }>
+                    {'Upload Files'}
+                </div>
+                <div className='flexInlineCenter'>
+                    <DropZone onChange={ handleChooseFile } comment='PNG, GIF, WEBP, MP4 or MP3. Max 100mb.' />
+                </div>
 
 
             </div>
