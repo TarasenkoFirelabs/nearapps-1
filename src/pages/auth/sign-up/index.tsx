@@ -10,7 +10,7 @@ const SignUp = observer(() => {
   const { wallet, signIn } = AuthStore;
   const [inputType, setInputType] = useState("email");
   const walletData = toJS(wallet);
-
+ 
   const handleInputType = (type) => {
     setInputType(type);
   };

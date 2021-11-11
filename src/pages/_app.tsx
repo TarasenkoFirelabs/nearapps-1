@@ -4,7 +4,6 @@ import "../assets/styles/main.scss";
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import { AuthStore } from '../stores/AuthStore';
-
 const MyApp = observer(({ Component, pageProps }) => {
   const { tryToConnect } = AuthStore
 

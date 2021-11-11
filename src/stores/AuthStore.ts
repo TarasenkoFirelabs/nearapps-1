@@ -1,23 +1,11 @@
 import * as nearAPI from "near-api-js";
 import { makeObservable } from 'mobx';
 import { ConnectConfig, Near } from "near-api-js";
-//import { Config } from "./Config";
+import { Config } from "./Config";
 import { formatNearAmount } from "near-api-js/lib/utils/format";
 import Storage from "./Storage";
 
 
-
-const Config = {
-    SEED_PHRASE_LOCAL_COPY: '__SEED_PHRASE_LOCAL_COPY',
-    FUNDING_DATA: '__FUNDING_DATA',
-    ACCOUNT_LINKS: '__ACCOUNT_LINKS',
-    GAS: '200000000000000',
-    networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
-    walletUrl: 'https://wallet.testnet.near.org',
-    nameSuffix: '.testnet',
-    contractName: 'testnet',
-}
 
 const {
     FUNDING_DATA,
@@ -31,7 +19,7 @@ const {
     nameSuffix,
     contractName
 } = Config;
-
+console.log(networkId);
 enum Locals {
     ACCESS_TOKEN = 'access_token',
     REFRESH_TOKEN = 'refresh_token',

@@ -25,4 +25,4 @@ const prodConfig = {
     contractName: 'near',
 }
 
-export const Config = process.env.REACT_APP_ENV === 'dev' ? devConfig : prodConfig
+export const Config = process.env.NEXT_PUBLIC_ENV === 'dev' ? devConfig : prodConfig

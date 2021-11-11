@@ -18,8 +18,6 @@ const App = () => {
     };
     useEffect(onMount, []);
 
-    // console.log('state', state);
-
     const {
         accountData, funding, wallet
     } = state
