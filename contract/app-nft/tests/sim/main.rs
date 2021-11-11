@@ -76,15 +76,55 @@ fn simulate_airdrop_default_meta() {
     };
     let rewards = AirdropRewards(vec![reward]);
     
-    let res = call!(
-        root, 
-        contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
-    );
-    res.assert_success();
+    //let res = call!(
+    //    root, 
+    //    contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
+    //);
+    //res.assert_success();
     //let res = call!(root, contract.airdrop(rewards));
     //assert!(res.is_ok());
     //let res: TokenId = view!(
     //    contract.pending_rewards_by_key(root.account_id())
     //).unwrap_json();
     //assert!(res, token_id);
+}
+
+
+#[test]
+#[should_panic(expected = "Ownable: predecessor is not the owner")]
+fn simulate_airdrop_default_meta_panic() {
+    let (root, contract, alice) = init();
+
+    let valid_account: ValidAccountId = root.account_id().clone().try_into().unwrap();
+    let res = call!(
+        root, contract.new_default_meta(valid_account.to_string()));
+
+    let token_meta = TokenMetadata{
+        title: Some("TestMetadata".to_string()),
+        description: None,
+        media: None,
+        media_hash: None,
+        copies: None,
+        issued_at: None,
+        expires_at: None,
+        starts_at: None,
+        updated_at: None,
+        extra: None,
+        reference: None,
+        reference_hash: None,
+    };
+
+    let valid_account: ValidAccountId = root.account_id().clone().try_into().unwrap();
+    
+    let token_id: TokenId = call!(
+        root,
+        contract.nft_mint("New_test_token".to_string(), valid_account, token_meta),
+        deposit = to_yocto("0.59")
+    ).unwrap_json();
+    
+    let res = call!(
+        alice, 
+        contract.add_pending_rewards(vec![(alice.account_id().clone(), token_id.clone())])
+    );
+    res.assert_success();
 }

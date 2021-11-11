@@ -3,7 +3,7 @@ mod mint;
 mod series;
 mod query;
 mod claim;
-mod airdrop;
+pub mod airdrop;
 
 //mod airdrop;
 use crate::internal::*;
