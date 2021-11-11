@@ -119,7 +119,7 @@ impl NftContract {
             total_supply: 0,
         }
     }
-    pub fn nft_transfer_unsafe(
+    pub(crate) fn nft_transfer_unsafe(
         &mut self,
         token_id: &TokenId,
         owner_id: &AccountId,
