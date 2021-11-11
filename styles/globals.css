@@ -75,6 +75,18 @@ a {
   align-content: center;
 }
 
+.flexBasis25 {
+  flex-basis: 25%;
+}
+
+.flexBasis33 {
+  flex-basis: 33%;
+}
+
+.flexBasis50 {
+  flex-basis: 50%;
+}
+
 .displayBlock {
   display: block;
 }
