@@ -126,7 +126,6 @@ impl NftContract {
         owner_id: &AccountId,
         receiver_id: &AccountId,
     ) {
-        assert_self();
         self.token
             .internal_transfer_unguarded(token_id, owner_id, receiver_id);
         env::log(
