@@ -3,6 +3,7 @@ mod mint;
 mod series;
 mod query;
 mod claim;
+mod upgrade;
 pub mod airdrop;
 
 //mod airdrop;
@@ -72,9 +73,6 @@ pub trait Ownable {
 }
 
 
-
-
-
 #[near_bindgen]
 impl NonFungibleTokenMetadataProvider for NftContract {
     fn nft_metadata(&self) -> NFTContractMetadata {
@@ -90,8 +88,8 @@ impl NftContract {
             owner_id,
             NFTContractMetadata {
                 spec: NFT_METADATA_SPEC.to_string(),
-                name: "Comic by Paras".to_string(),
-                symbol: "COMIC".to_string(),
+                name: "Neap Apps".to_string(),
+                symbol: "NAPP".to_string(),
                 icon: None,
                 base_uri: Some("https://ipfs.fleek.co/ipfs".to_string()),
                 reference: None,

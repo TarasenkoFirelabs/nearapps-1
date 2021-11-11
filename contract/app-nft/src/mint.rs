@@ -209,4 +209,34 @@ impl NftContract {
         U64::from(token_series.metadata.copies.unwrap())
     }
 
+     #[payable]
+    pub fn nft_mint_series(
+        &mut self, 
+        series_id: NftSeriesId, 
+        receiver_id: ValidAccountId
+    ) -> TokenId {
+        let initial_storage_usage = env::storage_usage();
+
+        let token_series = self.token_series.get(&series_id).expect("Near Apps: Token series not exist");
+        assert_eq!(env::predecessor_account_id(), token_series.creator_id, "Near Apps: not creator");
+        let token_id: TokenId = self.nft_mint_series_internal(series_id, receiver_id);
+
+        refund_deposit(env::storage_usage() - initial_storage_usage, 0);
+        
+        env::log(
+            json!({
+                "type": "nft_transfer",
+                "params": {
+                    "token_id": token_id,
+                    "sender_id": "",
+                    "receiver_id": receiver_id,
+                }
+            })
+            .to_string()
+            .as_bytes(),
+        );
+
+        token_id
+    }
+
 }
