@@ -111,7 +111,7 @@
 import { observable, action } from 'mobx';
 import { createBrowserHistory } from 'history';
 import * as nearAPI from "near-api-js"
-import { config } from "./config";
+import { config } from "../stores/Config";
 import axios from 'axios';
 
 const {
@@ -140,9 +140,12 @@ class NearStore {
         this.token = '';
         this.currentUser = null;
         this.processing = false;
+
         const logged = localStorage.getItem('Logged');
+        
         const token = localStorage.getItem('Token');
         const currentUser = localStorage.getItem('CurrentUser');
+
         if (logged) {
             this.logged = JSON.parse(logged);
         }

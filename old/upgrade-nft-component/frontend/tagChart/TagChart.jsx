@@ -28,7 +28,6 @@ export const TagChart = ({callback}) => {
 
             callback(tag);
 
-            // console.log(document.getElementById('tags'));
             // const tags = document.getElementById('tags').value;
 
             // const newTags = tags === '' ? [] : tags.split(',');
