@@ -233,16 +233,16 @@ impl NftContract {
             token_series.creator_id,
             "Near Apps: not creator"
         );
-        let token_id: TokenId = self.nft_mint_series_internal(series_id, receiver_id);
-
+        let token_id: TokenId = self.nft_mint_series_internal(series_id, receiver_id.clone());
+        
         refund_deposit(env::storage_usage() - initial_storage_usage, 0);
         env::log(
             json!({
                 "type": "nft_transfer",
                 "params": {
-                    "token_id": token_id,
+                    "token_id": token_id.clone(),
                     "sender_id": "",
-                    "receiver_id": receiver_id,
+                    "receiver_id": receiver_id.to_string(),
                 }
             })
             .to_string()
