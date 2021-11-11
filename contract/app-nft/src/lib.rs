@@ -2,7 +2,6 @@ mod internal;
 mod mint;
 mod series;
 mod query;
-mod claim;
 mod upgrade;
 pub mod airdrop;
 
