@@ -11,7 +11,6 @@ use near_sdk::json_types::ValidAccountId;
 extern crate app_nft;
 use app_nft::NftContractContract;
 use app_nft::airdrop::{AirdropReward, AirdropRewards};
-use app_nft::airdrop::SupportsAirdrop;
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
     AIRDROP_BYTES => "res/app_nft.wasm",
