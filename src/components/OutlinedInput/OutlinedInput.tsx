@@ -4,9 +4,10 @@ import styles from './OutlinedInput.module.sass';
 interface IOutlinedInputProps {
     onChange?: ChangeEventHandler<HTMLInputElement>
     label?: string
+    borderColor?: string
 }
 
-const OutlinedInput = ({ onChange, label }: IOutlinedInputProps) => {
+const OutlinedInput = ({ onChange, label, borderColor }: IOutlinedInputProps) => {
 
     return (
         <div className={ styles.root }>
@@ -15,6 +16,8 @@ const OutlinedInput = ({ onChange, label }: IOutlinedInputProps) => {
             </label>
             <input
                 id='outlined-input-1'
+                type='text'
+                style={{ borderColor: borderColor }}
                 className={ styles.outlinedInput }
                 onChange={ onChange }
                 maxLength={ 64 }
