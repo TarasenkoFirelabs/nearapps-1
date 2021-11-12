@@ -9,6 +9,8 @@ async function callContract(account: any, nearConfig: any, methodName: string, a
     args
   });
 
+  console.log("response", response);
+
   return response.transaction.hash;
 }
 

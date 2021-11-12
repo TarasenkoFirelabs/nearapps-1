@@ -25,9 +25,10 @@ async function initContract() {
   if(walletConnection.getAccountId()) {
     currentUser = {
       accountId: walletConnection.getAccountId(),
-      account: await near.account(currentUser.accountId),
       balance: (await walletConnection.account().state()).amount
     };
+
+    currentUser.account = await near.account(currentUser.accountId);
   }
 
   // Initializing our contract APIs by contract name and configuration

@@ -1,4 +1,6 @@
 const CONTRACT_NAME = process.env.CONTRACT_NAME;
+const CONTRACT_NAME_MAKE_WALLET = process.env.CONTRACT_NAME_MAKE_WALLET;
+const CONTRACT_NAME_NFT = process.env.CONTRACT_NAME_NFT;
 
 function getConfig(env) {
   switch(env) {
@@ -6,9 +8,11 @@ function getConfig(env) {
       return {
         networkId: 'mainnet',
         nodeUrl: 'https://rpc.mainnet.near.org',
-        contractName: CONTRACT_NAME,
         walletUrl: 'https://wallet.near.org',
-        helperUrl: 'https://helper.mainnet.near.org'
+        helperUrl: 'https://helper.mainnet.near.org',
+        contractName: CONTRACT_NAME,
+        contractNameMakeWallet: CONTRACT_NAME_MAKE_WALLET,
+        contractNameNft: CONTRACT_NAME_NFT
       };
     // This is an example app so production is set to testnet.
     // You can move production to mainnet if that is applicable.

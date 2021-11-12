@@ -1,29 +1,24 @@
 {
-  "name": "api-call",
-  "description": "Log Analitics Contract\n\nThis project contains implementation of log backed by blockchain, written in Rust.",
+  "name": "app-contract-call",
+  "description": "NEAR Apps Contract\n\nThis project contains implementation of log backed by blockchain, written in Rust.",
   "version": "0.1.0",
   "license": "(MIT AND Apache-2.0)",
   "scripts": {
     "build": "yarn build:contract && yarn build:web",
-    "build:contract": "yarn build:contract:make_wallet && yarn build:contract:log_analytics",
+    "build:contract": "yarn build:contract:app && yarn build:contract:make_wallet && yarn build:contract:nft",
     "postbuild:contract": "cp ../contract/target/wasm32-unknown-unknown/release/*.wasm res/",
-    "deploy:contract": "deploy:contract:make_wallet && deploy:contract:log_analytics",
-
-///*    "build:contract:make_wallet": "set -e & cd ../contract/app-wallet-creation && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release", */
+    "deploy:contract": "yarn deploy:contract:app && yarn deploy:contract:make_wallet && yarn deploy:contract:nft",
+    "postdeploy:contract": "echo 'NODE_ENV=testnet' >> .env",
     "build:contract:app": "set -e & cd ../contract/app && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
-
-
-
-    "deploy:contract:app": "near dev-deploy res/app.wasm && cp ./neardev/dev-account.env .env && echo '\nNODE_ENV=testnet' >> .env",
-
-    "deploy:contract:make_wallet": "near dev-deploy res/app_wallet_creation.wasm && echo 'CONTRACT_NAME=' > .env && cat ./neardev/dev-account >> .env",
-
-
-
-
+    "build:contract:make_wallet": "set -e & cd ../contract/app-wallet-creation && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
+    "build:contract:nft": "set -e & cd ../contract/app-nft && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
+    "deploy:contract:app": "near dev-deploy res/app.wasm && mv ./neardev/dev-account.env .env && echo '' >> .env",
+    "deploy:contract:make_wallet": "source .env && near create-account make-wallet.$CONTRACT_NAME --initialBalance 10 --masterAccount $CONTRACT_NAME && near deploy make-wallet.$CONTRACT_NAME --wasmFile res/app_wallet_creation.wasm && echo 'CONTRACT_NAME_MAKE_WALLET=make-wallet.'$CONTRACT_NAME >> .env",
+    "deploy:contract:nft": "source .env && near create-account app_nft.$CONTRACT_NAME --initialBalance 10 --masterAccount $CONTRACT_NAME && near deploy app_nft.$CONTRACT_NAME --wasmFile res/app_nft.wasm && echo 'CONTRACT_NAME_NFT=nft.'$CONTRACT_NAME >> .env",
     "build:web": "parcel build src/index.html --public-url ./",
     "deploy": "yarn build && yarn deploy:contract && gh-pages -d dist/",
-    "dev": "yarn build:contract && yarn deploy:contract && nodemon --watch assembly -e ts --exec yarn dev:start",
+    "dev": "yarn build:contract && yarn deploy:contract && yarn dev:web",
+    "dev:web": "nodemon --watch assembly -e ts --exec yarn dev:start",
     "lint": "eslint \"./**/*.js\" \"./**/*.jsx\"",
     "start": "yarn deploy && parcel src/index.html",
     "dev:start": "yarn build:web && env-cmd parcel src/index.html --open",
@@ -54,6 +49,7 @@
     "big.js": "^6.1.1",
     "env-cmd": "^10.1.0",
     "near-api-js": "^0.41.0",
+    "near-seed-phrase": "^0.2.0",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-alert": "^7.0.3",

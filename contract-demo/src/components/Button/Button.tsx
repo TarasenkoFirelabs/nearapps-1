@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import { Colors } from "../../utils";
+import { Colors } from "../../utils/Colors";
 import styles from './Button.module.sass';
 
 interface IButtonProps {

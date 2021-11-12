@@ -31,7 +31,7 @@ const App = ({ contract, currentUser, nearConfig, wallet }) => {
         }
       </header>
       { currentUser
-        ? <RegistrationForm currentUser={currentUser} nearConfig={nearConfig} />
+        ? <RegistrationForm contract={contract} currentUser={currentUser} nearConfig={nearConfig} />
         : <SignIn/>
       }
     </main>
