@@ -9,11 +9,17 @@
     "postbuild:contract": "cp ../contract/target/wasm32-unknown-unknown/release/*.wasm res/",
     "deploy:contract": "deploy:contract:make_wallet && deploy:contract:log_analytics",
 
-    "build:contract:make_wallet": "set -e & cd ../contract/app-wallet-creation && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
-    "build:contract:log_analytics": "set -e & cd ../contract/app && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
+///*    "build:contract:make_wallet": "set -e & cd ../contract/app-wallet-creation && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release", */
+    "build:contract:app": "set -e & cd ../contract/app && RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release",
+
+
+
+    "deploy:contract:app": "near dev-deploy res/app.wasm && cp ./neardev/dev-account.env .env && echo '\nNODE_ENV=testnet' >> .env",
 
     "deploy:contract:make_wallet": "near dev-deploy res/app_wallet_creation.wasm && echo 'CONTRACT_NAME=' > .env && cat ./neardev/dev-account >> .env",
-    "deploy:contract:log_analytics": "near dev-deploy res/app.wasm && mv ./neardev/dev-account.env app.env && echo '\nNODE_ENV=testnet' >> app.env",
+
+
+
 
     "build:web": "parcel build src/index.html --public-url ./",
     "deploy": "yarn build && yarn deploy:contract && gh-pages -d dist/",
