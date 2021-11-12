@@ -13,6 +13,8 @@ use near_sdk_sim::{
 };
 
 extern crate app;
+extern crate app_wallet_creation;
+use app_wallet_creation::NewAccount;
 use app::{ContractArgs, NearAppsContract};
 
 near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
@@ -84,7 +86,6 @@ fn simulate_fail_call() {
         near_apps.add_contract(status_id.clone()),
         gas = DEFAULT_GAS
     );
-
     let res = call!(
         master_account,
         near_apps.call(
@@ -113,13 +114,6 @@ fn simulate_fail_call() {
     assert!(!res.is_ok());
 }
 
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct NewAccount {
-    account_id: AccountId,
-    public_key: PublicKey,
-}
-
 #[test]
 fn simulate_wallet_call() {
     let (master_account, near_apps) = init();
@@ -132,10 +126,10 @@ fn simulate_wallet_call() {
     let account_id = "make_wallet_1".parse().unwrap();
     let public_key =
         PublicKey::from_str("ed25519:Bnsj1BXvhRaJuA316v5GWk6M5G3Wyq8ZEVJHtorXt1DP").unwrap();
-    let new_account = NewAccount {
+    let new_account = NewAccount::new(
         account_id,
         public_key,
-    };
+    );
     let make_wallet_json = json!({ "new_account": new_account });
     let res = call!(
         near_apps.user_account,
