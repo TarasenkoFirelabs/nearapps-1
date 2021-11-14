@@ -1,0 +1,29 @@
+@import "../../../../../styles/mixins/texts"
+@import "../../../../../styles/mixins/positions"
+
+.headerBlock
+  @include textHeader
+  @include flexInlineCenter
+  padding: 10px 10px 0
+  width: 300px
+  margin: 0 auto
+
+  @media only screen and (max-width: 600px)
+    width: 100%
+
+.cancelFab
+  flex-basis: 25%
+  text-align: right
+  @media only screen and (max-width: 600px)
+    padding: 0 10px 0 0
+
+.backFab
+  flex-basis: 25%
+  text-align: left
+  @media only screen and (max-width: 600px)
+    padding: 0 0 0 10px
+
+.horizontalLine1
+  width: 335px
+  @media only screen and (max-width: 600px)
+    width: 100%

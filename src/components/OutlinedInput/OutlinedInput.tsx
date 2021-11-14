@@ -1,24 +1,25 @@
-import React, {ChangeEventHandler} from "react";
+import React, { ChangeEventHandler } from "react";
 import styles from './OutlinedInput.module.sass';
 
 interface IOutlinedInputProps {
+    className?: any
     onChange?: ChangeEventHandler<HTMLInputElement>
-    label?: string
+    label?: string | null
     borderColor?: string
 }
 
-const OutlinedInput = ({ onChange, label, borderColor }: IOutlinedInputProps) => {
+const OutlinedInput = ({ className = null, onChange, label = null, borderColor }: IOutlinedInputProps) => {
 
     return (
         <div className={ styles.root }>
-            <label htmlFor='outlined-input-1' className='textSubBody-12 padding-5-0'>
+            { label && <label htmlFor='outlined-input-1' className='textSubBody-12 padding-5-0'>
                 { label }
-            </label>
+            </label> }
             <input
                 id='outlined-input-1'
                 type='text'
                 style={{ borderColor: borderColor }}
-                className={ styles.outlinedInput }
+                className={`${ className } ${ styles.outlinedInput }`}
                 onChange={ onChange }
                 maxLength={ 64 }
             />
