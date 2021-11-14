@@ -8,13 +8,7 @@ import { Colors } from "../../../../utils";
 import FadeTextArea from "../../../elements/FadeTextArea";
 import Button from "../../../Button";
 
-const ChooseFile = ({ step, handleStepNext }) => {
-
-    const handleChooseFile = (e) => {
-
-        console.log(e)
-
-    }
+const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftData }) => {
 
     return (
         <>
@@ -43,11 +37,20 @@ const ChooseFile = ({ step, handleStepNext }) => {
                 />
             </div>
             <div className='flexInlineCenter padding-30-0-0'>
-                <OutlinedInput label={'TITLE'} borderColor={ Colors.black } />
+                <OutlinedInput
+                    onChange={ handleChange }
+                    name='title'
+                    value={ nftData.title }
+                    label={'TITLE'}
+                    borderColor={ Colors.black }
+                />
             </div>
             <div className='flexInlineCenter padding-20-0-0'>
                 <FadeTextArea
+                    name='description'
                     label={'DESCRIPTION'}
+                    value={ nftData.description }
+                    onChange={ handleChange }
                     rows={ 3 }
                 />
             </div>
@@ -56,8 +59,18 @@ const ChooseFile = ({ step, handleStepNext }) => {
                     {'PROPERTIES'}
                 </div>
                 <div className='flexInlineCenter'>
-                    <OutlinedInput className={ styles.outInput } />
-                    <OutlinedInput className={ styles.outInput } />
+                    <OutlinedInput
+                        className={ styles.outInput }
+                        name='width'
+                        value={ nftData.width }
+                        onChange={ handleChange }
+                    />
+                    <OutlinedInput
+                        className={ styles.outInput }
+                        name='height'
+                        value={ nftData.height }
+                        onChange={ handleChange }
+                    />
                 </div>
             </div>
             <div className='spacer-15' />
