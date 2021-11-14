@@ -28,6 +28,10 @@ a {
   padding: 5px 0;
 }
 
+.padding-5-0-0 {
+  padding: 5px 0 0;
+}
+
 .padding-25 {
   padding: 25px;
 }
@@ -115,10 +119,24 @@ a {
   color: black;
 }
 
+.textHeader-16 {
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: black;
+}
+
 .textSubBody-14 {
   font-weight: 400;
   font-size: 14px;
   color: #808080;
+}
+
+.textSubBody-13 {
+  font-weight: 400;
+  font-size: 13px;
+  color: #808080;
+  line-height: 19px;
 }
 
 .textSubBody-12 {

@@ -27,3 +27,36 @@
   width: 335px
   @media only screen and (max-width: 600px)
     width: 100%
+
+.imagePreviewBlock
+  padding: 19px 0
+  display: flex
+  flex-direction: column
+  margin: 30px auto 0
+  max-height: 527px
+  width: 349px
+  border: 1px solid #DEDEDE
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.04)
+  box-sizing: border-box
+  border-radius: 10px
+
+  & .subHeaderBlock
+    @include textHeader
+    justify-content: right
+    padding: 35px 0 10px
+    width: 300px
+    margin: 0 auto
+
+    @media only screen and (max-width: 600px)
+      padding: 35px 22px 10px
+      width: 100%
+
+  & .descriptionBlock
+    justify-content: right
+    width: 300px
+    margin: 0 auto
+    word-break: break-word
+
+.mintBtn
+  width: 345px
+  border-radius: 8px
