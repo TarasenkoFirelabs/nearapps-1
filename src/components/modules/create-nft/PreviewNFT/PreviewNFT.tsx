@@ -51,6 +51,8 @@ const PreviewNFT = ({ step, handleStepBack, nftData, submitNft }: IPreviewNFTPro
                             alt='profile image'
                             width={ 40 }
                             height={ 40 }
+                            objectFit='contain'
+                            objectPosition='50% 50%'
                         />
                     </div>
                     <div className={ styles.profileContent }>
