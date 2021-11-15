@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import App from './App';
-import getContractsConfig from './config.js';
+import getContractsConfig from './full-config.js';
 import * as nearAPI from 'near-api-js';
 
 // Initializing contract
