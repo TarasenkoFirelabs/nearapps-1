@@ -45,7 +45,7 @@ App.propTypes = {
   }).isRequired,
   currentUser: PropTypes.shape({
     accountId: PropTypes.string.isRequired,
-    balance: PropTypes.string.isRequired
+    balance: PropTypes.number.isRequired
   }),
   // analytics: PropTypes.shape({
   //   app_id: PropTypes.string.isRequired,

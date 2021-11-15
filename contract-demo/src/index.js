@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { transitions, positions, Provider as AlertProvider } from 'react-alert'
 import App from './App';
-import getConfig from './config.js';
+import getContractsConfig from './full-config.js';
 import * as nearAPI from 'near-api-js';
 
 // Initializing contract
 async function initContract() {
-  const nearConfig = getConfig(process.env.NODE_ENV || 'testnet');
+  const nearConfig = getContractsConfig(process.env.NODE_ENV || 'testnet');
 
   // Initializing connection to the NEAR TestNet
   const near = await nearAPI.connect({
@@ -25,7 +25,7 @@ async function initContract() {
   if(walletConnection.getAccountId()) {
     currentUser = {
       accountId: walletConnection.getAccountId(),
-      balance: (await walletConnection.account().state()).amount
+      balance: (await walletConnection.account().state()).amount / Math.pow(10, 24)
     };
 
     currentUser.account = await near.account(currentUser.accountId);

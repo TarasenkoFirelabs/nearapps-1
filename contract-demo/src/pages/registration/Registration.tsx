@@ -5,11 +5,8 @@ import OutlinedInput from "../../components/OutlinedInput";
 import Button from "../../components/Button";
 import { Colors } from "../../utils/Colors";
 import { generateSeedPhrase } from "near-seed-phrase";
-import callContract from "../../utils/CallContract";
-const CONTRACT_NAME_MAKE_WALLET = process.env.CONTRACT_NAME_MAKE_WALLET;
-const CONTRACT_NAME_NFT = process.env.CONTRACT_NAME_NFT;
 
-const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>\/?]*$/
+const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>.\/?]*$/
 
 const Registration = ({ contract, currentUser, nearConfig }) => {
     const alert = useAlert();
@@ -18,7 +15,7 @@ const Registration = ({ contract, currentUser, nearConfig }) => {
 
     const validate = useCallback(() => {
         let isValid = true;
-        let checkAccountIDReg = regExpression.test(accountID)
+        const checkAccountIDReg = regExpression.test(accountID)
 
         if (!checkAccountIDReg || accountID.length < 2) {
             isValid = false
@@ -38,35 +35,34 @@ const Registration = ({ contract, currentUser, nearConfig }) => {
 
     const submitAccountID = async () => {
       try {
-        console.log('Generate key pair from random on curve type: ed25519');
-
-        const { seedPhrase, publicKey } = generateSeedPhrase();
+        setIsValid(false);
         // const keyPair = KeyPair.fromRandom('ed25519');
         // const publicKey = keyPair.getPublicKey().toString();
 
+        const { seedPhrase, publicKey } = generateSeedPhrase();
         console.log('Generate seedPhrase: ', seedPhrase);
         console.log('Generate publicKey: ', publicKey);
 
         const newAccount =  {
           account_id: accountID,
-          public_key: publicKey ///"AngnS4YGwMGoMDwnyNK3wXt8f9xYfXfvGfKvXhYC1AVF",
+          public_key: publicKey
         };
 
         const args = {
-          "tags": [{"person": "Raf", "company": "4ire", "purpose": "test"}],
-          "contract_name": CONTRACT_NAME_MAKE_WALLET,
-          "args": {"function_name": "new_wallet", "params": JSON.stringify({"new_account": newAccount})  }
+          "tags": [{ "person": "Raf", "company": "4ire", "purpose": "test"}],
+          "contract_name": nearConfig.CONTRACT_NAME_MAKE_WALLET,
+          "args": { "function_name": "make_wallet", "params": JSON.stringify({"network": "testnet", "new_account": newAccount}) }
         };
 
-        console.log(contract);
+        const result = await contract.call(args, nearConfig.GAS, nearConfig.ATTACHED_DEPOSIT_AMOUNT);
 
-        setIsValid(false);
+        setIsValid(true);
 
-        const result = await contract.call({"args": args});
+        if (result){
+          console.log("created success");
 
-        console.log(result);
 
-        setIsValid(true)
+        }
 
         // callContract(currentUser.account, nearConfig, 'app', args)
         //   .then((txid) => {
@@ -81,7 +77,7 @@ const Registration = ({ contract, currentUser, nearConfig }) => {
         //   .finally(() => {setIsValid(true)})
 
       } catch(error) {
-        console.log(error);
+        console.log("Error: ", error);
         alert.error(error);
       }
     }
@@ -90,7 +86,8 @@ const Registration = ({ contract, currentUser, nearConfig }) => {
         <div className={ styles.root }>
             <div className={ styles.baseBody }>
                 <div className={ styles.registrationUnderBody2 }>
-                  You are: {currentUser.accountId}
+                  <div>Welcome, {currentUser.accountId}!</div>
+                  <div>Your balance: {currentUser.balance} Ⓝ</div>
                 </div>
                 <hr className={ styles.horizontalLine2 } />
 
