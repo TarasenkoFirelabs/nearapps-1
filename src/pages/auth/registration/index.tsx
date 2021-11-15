@@ -5,7 +5,7 @@ import Button from "../../../components/Button";
 import { Colors } from "../../../utils";
 import { postApi } from "../../../helpers/api";
 
-const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>\/?]*$/
+const regExpression = /^[a-zA-Z0-9!#$%^&*()_+\-=\[\]{};':"\\|<>.\/?]*$/
 
 const Registration = () => {
     const [accountID, setAccountID] = useState<string>('');

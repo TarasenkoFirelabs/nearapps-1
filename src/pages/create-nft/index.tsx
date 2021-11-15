@@ -1,27 +1,35 @@
-import React, {useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from './CreateNft.module.sass';
 import ChooseFile from "../../components/modules/create-nft/ChooseFile"
 import PreviewNFT from "../../components/modules/create-nft/PreviewNFT";
+import { postApi } from "../../helpers/api";
+import { INftData } from "../../components/modules/create-nft/CreateNFTTypes";
 
-interface INftData {
-    path: string
-    file: any
-    title: string
-    description: string
-    height: string
-    width: string
-}
 
 const CreateNft = () => {
     const [step, setStep] = useState(1);
+    const [isValid, setIsValid] = useState<boolean>(false)
     const [nftData, setNftData] = useState<INftData>({
-        path: '',
         file: null,
         title: '',
         description: '',
         height: '',
         width: ''
     });
+
+    const validate = useCallback(() => {
+        let isValid = true;
+
+        if (!nftData.title || !nftData.file || !nftData.description) {
+            isValid = false
+        }
+
+        setIsValid(isValid);
+    },[nftData])
+
+    useEffect(() => {
+        validate()
+    }, [validate])
 
     const handleChooseFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -33,29 +41,6 @@ const CreateNft = () => {
             }
             return { ...prev }
         })
-
-
-        /*for(let i = 0; i < filesLength; i++) {
-            let reader = new FileReader();
-            let file = files[i];
-
-            reader.onloadend = () => {
-                setNftData(prev => {
-
-                    {
-                        images: self.state.images.concat(reader.result);
-                    }
-                }});
-            }
-
-            reader.readAsDataURL(file);
-        }*/
-
-
-       /* setNftData(prev => {
-            prev.path = value
-            return { ...prev };
-        })*/
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,14 +52,22 @@ const CreateNft = () => {
         })
     }
 
-    console.log(nftData)
-
     const handleStepNext = () => {
-            setStep(step + 1)
+        setStep(step + 1)
     }
 
     const handleStepBack = () => {
         setStep(step - 1)
+    }
+
+    const submitNft = () => {
+        postApi('http://example.com/api/endpoint/', {
+            nftData
+        }, {
+            mode: "no-cors",
+        }).then(res => {
+            console.log(res);
+        })
     }
 
     const getStepPage = () => {
@@ -87,14 +80,20 @@ const CreateNft = () => {
                         handleChooseFile={ handleChooseFile }
                         handleChange={ handleChange }
                         nftData={ nftData }
+                        isValid={ isValid }
                     />)
             case 2:
-                return <PreviewNFT step={ step } handleStepBack={ handleStepBack } nftData={ nftData } />
+                return (
+                    <PreviewNFT
+                        step={ step }
+                        handleStepBack={ handleStepBack }
+                        nftData={ nftData }
+                        submitNft={ submitNft }
+                    />)
             default:
                 return;
         }
     }
-
 
     return (
         <div className={ styles.root }>

@@ -7,8 +7,9 @@ import OutlinedInput from "../../../OutlinedInput";
 import { Colors } from "../../../../utils";
 import FadeTextArea from "../../../elements/FadeTextArea";
 import Button from "../../../Button";
+import { IChooseFileProps } from './ChooseFileTypes';
 
-const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftData }) => {
+const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftData, isValid }: IChooseFileProps) => {
 
     return (
         <>
@@ -83,6 +84,7 @@ const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftD
                         text='Next'
                         backgroundColor={ Colors.black }
                         textColor={ Colors.white }
+                        disabled={ !isValid }
                     />
                 </div>
             </div>

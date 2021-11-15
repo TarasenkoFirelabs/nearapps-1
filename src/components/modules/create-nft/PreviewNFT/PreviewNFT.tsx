@@ -6,8 +6,9 @@ import BackIcon from "../../../../assets/icons/BackIcon";
 import Image from "next/image";
 import Button from "../../../Button";
 import { Colors } from "../../../../utils";
+import { IPreviewNFTProps } from "./PreviewNFTTypes";
 
-const PreviewNFT = ({ step, handleStepBack, nftData }) => {
+const PreviewNFT = ({ step, handleStepBack, nftData, submitNft }: IPreviewNFTProps) => {
 
     return (
         <>
@@ -27,29 +28,31 @@ const PreviewNFT = ({ step, handleStepBack, nftData }) => {
                 {`STEP ${ step } OF 2`}
             </div>
             <div className={ styles.imagePreviewBlock }>
-                <Image
-                    src={ nftData?.file }
-                    width={ 313 }
-                    height={ 186 }
-                    objectFit='contain'
-                    objectPosition='50% 50%'
-                    alt='NFT preview image'
-                />
+                    <div className={ styles.blockPreview }>{'Preview'}</div>
+                    <Image
+                        src={ nftData?.file }
+                        width={ 313 }
+                        height={ 186 }
+                        objectFit='contain'
+                        objectPosition='50% 50%'
+                        alt='NFT preview image'
+                    />
                 <div className={ styles.subHeaderBlock }>
-                    { nftData.title }
+                    { nftData?.title }
                 </div>
                 <div className={ styles.descriptionBlock }>
                     <div className='textHeader-16'>
                         {'Descriptions'}
                     </div>
                     <div className='textSubBody-13 padding-5-0-0'>
-                        { nftData.description }
+                        { nftData?.description }
                     </div>
                 </div>
             </div>
             <div className='flexInlineCenter padding-20-0-0'>
                 <Button
                     className={ styles.mintBtn }
+                    onClick={ submitNft }
                     text='Mint NFT'
                     backgroundColor={ Colors.primary }
                     textColor={ Colors.white }
