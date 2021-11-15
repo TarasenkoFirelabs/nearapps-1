@@ -7,9 +7,10 @@ interface IFadeTextAreaProps {
     value?: any
     label?: string
     rows?: number
+    maxLength?: number
 }
 
-const FadeTextArea = ({ onChange, name, value, label, rows }: IFadeTextAreaProps) => {
+const FadeTextArea = ({ onChange, name, value, label, rows, maxLength }: IFadeTextAreaProps) => {
 
     return (
         <div className={ styles.root }>
@@ -23,6 +24,7 @@ const FadeTextArea = ({ onChange, name, value, label, rows }: IFadeTextAreaProps
                 value={ value }
                 onChange={ onChange }
                 rows={ rows }
+                maxLength={ maxLength }
             />
         </div>
     )

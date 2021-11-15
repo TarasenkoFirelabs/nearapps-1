@@ -53,6 +53,7 @@ const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftD
                     value={ nftData.description }
                     onChange={ handleChange }
                     rows={ 3 }
+                    maxLength={ 240 }
                 />
             </div>
             <div className={ styles.propertiesBlock }>

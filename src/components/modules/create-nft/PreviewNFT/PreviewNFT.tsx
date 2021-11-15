@@ -40,6 +40,9 @@ const PreviewNFT = ({ step, handleStepBack, nftData, submitNft }: IPreviewNFTPro
                 <div className={ styles.subHeaderBlock }>
                     { nftData?.title }
                 </div>
+                <div className={ styles.chipsBlock }>
+                    {'Digital art'}
+                </div>
                 <div className={ styles.descriptionBlock }>
                     <div className='textHeader-16'>
                         {'Descriptions'}

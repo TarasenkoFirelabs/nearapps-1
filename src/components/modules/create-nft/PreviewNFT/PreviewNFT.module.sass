@@ -57,19 +57,29 @@
   & .subHeaderBlock
     @include textHeader
     justify-content: right
-    padding: 35px 0 10px
+    padding: 35px 0 0
     width: 300px
     margin: 0 auto
 
     @media only screen and (max-width: 600px)
-      padding: 35px 22px 10px
+      padding: 35px 22px 0
       width: 100%
+
+  & .chipsBlock
+    @include textSubBody-14
+    @include flexInlineCenter
+    margin: 10px 13px
+    width: 94px
+    height: 34px
+    border-radius: 50px
+    background-color: #EDEBEB
 
   & .descriptionBlock
     justify-content: right
     width: 300px
     margin: 0 auto
     word-break: break-word
+    overflow-y: auto
 
 .mintBtn
   width: 345px

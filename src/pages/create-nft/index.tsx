@@ -87,8 +87,8 @@ const CreateNft = () => {
                     <PreviewNFT
                         step={ step }
                         handleStepBack={ handleStepBack }
-                        nftData={ nftData }
                         submitNft={ submitNft }
+                        nftData={ nftData }
                     />)
             default:
                 return;
