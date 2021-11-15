@@ -86,6 +86,11 @@ a {
   align-items: center;
 }
 
+.flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+
 .flexColumnCenter {
   display: flex;
   flex-direction: column;
@@ -123,6 +128,12 @@ a {
   font-family: Inter, sans-serif;
   font-size: 16px;
   font-weight: 700;
+  color: black;
+}
+
+.textSubHeader-13 {
+  font-weight: 600;
+  font-size: 13px;
   color: black;
 }
 

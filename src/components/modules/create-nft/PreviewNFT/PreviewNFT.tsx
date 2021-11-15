@@ -7,6 +7,7 @@ import Image from "next/image";
 import Button from "../../../Button";
 import { Colors } from "../../../../utils";
 import { IPreviewNFTProps } from "./PreviewNFTTypes";
+import profile from '../../../../assets/images/profile_no_avatar.svg';
 
 const PreviewNFT = ({ step, handleStepBack, nftData, submitNft }: IPreviewNFTProps) => {
 
@@ -42,6 +43,20 @@ const PreviewNFT = ({ step, handleStepBack, nftData, submitNft }: IPreviewNFTPro
                 </div>
                 <div className={ styles.chipsBlock }>
                     {'Digital art'}
+                </div>
+                <div className={ styles.profileInfoBlock }>
+                    <div>
+                        <Image
+                            src={ profile }
+                            alt='profile image'
+                            width={ 40 }
+                            height={ 40 }
+                        />
+                    </div>
+                    <div className={ styles.profileContent }>
+                        <span className='textSubHeader-13'>{'john_doe'}</span>
+                        <span className='textSubBody-12'>{'0xkej34i04...3cdk'}</span>
+                    </div>
                 </div>
                 <div className={ styles.descriptionBlock }>
                     <div className='textHeader-16'>

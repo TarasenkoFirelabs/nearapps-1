@@ -32,7 +32,7 @@ const ChooseFile = ({ step, handleStepNext, handleChooseFile, handleChange, nftD
             <div className='flexInlineCenter'>
                 <DropZone
                     onChange={ handleChooseFile }
-                    labelName={'Choose file'}
+                    labelName={ nftData?.file ? 'Selected!' : 'Choose file'  }
                     comment='PNG, GIF, WEBP, MP4 or MP3. Max 100mb.'
                     acceptType='.PNG,.GIF,.WEBP,.MP4,.MP3'
                 />

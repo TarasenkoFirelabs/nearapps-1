@@ -68,18 +68,26 @@
   & .chipsBlock
     @include textSubBody-14
     @include flexInlineCenter
-    margin: 10px 13px
+    margin: 10px 13px 0
     width: 94px
     height: 34px
     border-radius: 50px
     background-color: #EDEBEB
 
   & .descriptionBlock
+    padding: 19px 19px 0
     justify-content: right
-    width: 300px
-    margin: 0 auto
     word-break: break-word
     overflow-y: auto
+
+.profileInfoBlock
+  display: flex
+  padding: 17px 17px 0
+
+  & .profileContent
+    display: flex
+    flex-direction: column
+    padding: 0 15px
 
 .mintBtn
   width: 345px
