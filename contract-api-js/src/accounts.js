@@ -52,14 +52,19 @@ const createWallet = (resp) => {
     console.log(chalk.greenBright(`Wallet ${resp.wallet} has been successfully created... `));
 };
 
-async function approveId(accountId, contractId) {
+async function initApp () {
     const near = await connect(config);
     const account = await near.account(accountId);
     const contract = new Contract(account, accountId, {
-      viewMethods: [],
-      changeMethods: ["add_contract"],
+      viewMethods: ["log_analytics"],
+      changeMethods: ["add_contract", "call"],
       sender: account,
     });
+    return contract;
+}
+
+async function approveId(accountId, contractId) {
+    contract = initApp();
     const result = await contract.add_contract({contract_name: contractId.accountId});
     console.log(result);
   }
