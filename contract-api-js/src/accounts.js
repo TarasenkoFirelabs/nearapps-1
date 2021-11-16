@@ -25,13 +25,13 @@ async function callCreateWallet(accountId, publicKey) {
     const contract = new Contract(account, MAKE_WALLET_CONTRACT_ID, {
         // name of contract you're connecting to
         viewMethods: [], // view methods do not change state but usually return a value
-        changeMethods: ["makeWallets"], // change methods modify state
+        changeMethods: ["make_wallet"], // change methods modify state
         sender: account, // account object to initialize and sign transactions.
     });
 
-    const result = await contract.makeWallets(
+    const result = await contract.make_wallet(
         {
-            new_account: { "accountId": accountId, "publicKey": publicKey }, // argument name and value - pass empty object if no args required
+            new_account: { "account_id": accountId, "public_key": publicKey }, // argument name and value - pass empty object if no args required
 
             gas: 300000000000000, // attached GAS (optional)
             amount: 1000000000000000000000000 // attached deposit in yoctoNEAR (optional)
@@ -47,7 +47,7 @@ const createWallet = (resp) => {
     //TODO: Seed phrase generation here
     const { seedPhrase, publicKey } = generateSeedPhrase();
     console.log(chalk.gray(`SeedPhrase:`) + chalk.bgGray(seedPhrase))
-    callCreateWallet(resp.wallet, resp.publicKey);
+    callCreateWallet(resp.wallet, publicKey);
 
     console.log(chalk.greenBright(`Wallet ${resp.wallet} has been successfully created... `));
 };
