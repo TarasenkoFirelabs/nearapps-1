@@ -6,7 +6,7 @@ const path = require("path");
 const homedir = require("os").homedir();
 
 const CREDENTIALS_DIR = ".near-credentials";
-const ACCOUNT_ID = "adsick.testnet";
+const ACCOUNT_ID = "dev-1636986913935-73551190344227";
 const MAKE_WALLET_CONTRACT_ID = "adsick.testnet";
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
@@ -52,6 +52,23 @@ const createWallet = (resp) => {
     console.log(chalk.greenBright(`Wallet ${resp.wallet} has been successfully created... `));
 };
 
+async function approveId(accountId, contractId) {
+    const near = await connect(config);
+    const account = await near.account(accountId);
+    const contract = new Contract(account, accountId, {
+      viewMethods: [],
+      changeMethods: ["add_contract"],
+      sender: account,
+    });
+    const result = await contract.add_contract({contract_name: contractId.accountId});
+    console.log(result);
+  }
+  
+  const approveContract = (resp) => {
+    approveId(ACCOUNT_ID, resp);
+  }  
+
 module.exports = {
     createWallet,
+    approveContract,
 };
