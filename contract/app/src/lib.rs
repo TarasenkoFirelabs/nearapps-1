@@ -1,5 +1,7 @@
+//! Some js examples will be here.
+
 use std::collections::HashMap;
-use std::convert::{TryFrom, TryInto};
+use std::convert::{TryFrom, TryInto,Into};
 use std::str;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
@@ -43,6 +45,7 @@ pub struct ContractArgs {
 }
 
 impl ContractArgs {
+    ///Creates a new instance of ContractArgs from given data.
     pub fn new(function_name: String, params: String) -> Self {
         Self {
             function_name,
@@ -94,6 +97,8 @@ impl Default for NearApps {
 
 #[near_bindgen]
 impl NearApps {
+    ///Creates a new instance of NearApps from given data.
+    ///any_contracts and any_tags are set to false.
     #[init]
     pub fn new(
         owner_id: AccountId,
@@ -115,6 +120,7 @@ impl NearApps {
         }
     }
 
+    ///Payable function. Returns Promise.
     #[payable]
     pub fn call(
         &mut self,
@@ -160,41 +166,57 @@ impl NearApps {
         }
     }
 
+    ///Logs all of the required tags.
     pub fn print_required_tags(self) {
         let s = format!("{:?}", self.required_tags.iter().collect::<Vec<String>>());
         env::log_str(&s[1..s.len()]);
     }
 
+    ///Adds contract_name to the list of approved contracts.
+    ///Can only be called by the owner.
     pub fn add_contract(&mut self, contract_name: AccountId) {
         self.assert_owner();
         self.approved_contracts.insert(&contract_name);
     }
 
+    ///Removes contract from the list of approved contracts.
+    ///Can only be called by the owner.
     pub fn remove_contract(&mut self, contract_name: AccountId) {
         self.assert_owner();
         self.approved_contracts.remove(&contract_name);
     }
 
+    ///Sets the status of the field any_contracts.
+    ///If true, all contracts are automatically verified.
+    ///Can only be called by the owner.
     pub fn any_contracts_allowed(&mut self, any: bool) {
         self.assert_owner();
         self.any_contracts = any;
     }
 
+    ///Adds new tag.
+    ///Can only be called by the owner.
     pub fn add_tag(&mut self, tag_name: String) {
         self.assert_owner();
         self.required_tags.insert(&tag_name);
     }
 
+    ///Removes the given tag.
+    ///Can only be called by the owner.
     pub fn remove_tag(&mut self, tag_name: String) {
         self.assert_owner();
         self.required_tags.remove(&tag_name);
     }
 
+    ///Sets the status of the field tags.
+    ///If true, all tags are automatically verified.
+    ///Can only be called by the owner.
     pub fn any_tags_allowed(&mut self, any: bool) {
         self.assert_owner();
         self.any_tags = any;
     }
 
+    ///Decodes given string and logs resulting app_id, action_id and account_id.
     pub fn log_analytics(&mut self, encoded: String) {
         let call_encoded: Vec<&str> = encoded.split('_').collect();
         let mut call_decoded: Vec<String> = Vec::new();
@@ -218,6 +240,8 @@ impl NearApps {
         };
         self.analytics_log.insert(&analytics_data);
     }
+ 
+    ///Can only be called by predecessor_account_id().
     #[private]
     pub fn check_promise(&mut self, tags: Vec<HashMap<String, String>>) -> bool {
         assert_eq!(env::promise_results_count(), 1, "ERR_TOO_MANY_RESULTS");

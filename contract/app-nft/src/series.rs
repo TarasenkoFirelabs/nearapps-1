@@ -21,7 +21,6 @@ pub struct NftSeries {
     pub tokens: UnorderedSet<TokenId>,
     pub price: Option<Balance>,
     pub is_mintable: bool,
-    pub royalty: HashMap<AccountId, u32>,
     pub closed: bool,
 }
 #[derive(Serialize, Deserialize)]
@@ -30,6 +29,5 @@ pub struct NftSeriesJson {
     pub series_id: NftSeriesId,
     pub metadata: TokenMetadata,
     pub creator_id: AccountId,
-    pub royalty: HashMap<AccountId, u32>,
 }
 

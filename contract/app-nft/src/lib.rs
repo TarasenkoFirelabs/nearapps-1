@@ -2,8 +2,8 @@ mod internal;
 mod mint;
 mod series;
 mod query;
-mod claim;
-mod airdrop;
+mod upgrade;
+pub mod airdrop;
 
 //mod airdrop;
 use crate::internal::*;
@@ -72,9 +72,6 @@ pub trait Ownable {
 }
 
 
-
-
-
 #[near_bindgen]
 impl NonFungibleTokenMetadataProvider for NftContract {
     fn nft_metadata(&self) -> NFTContractMetadata {
@@ -90,8 +87,8 @@ impl NftContract {
             owner_id,
             NFTContractMetadata {
                 spec: NFT_METADATA_SPEC.to_string(),
-                name: "Comic by Paras".to_string(),
-                symbol: "COMIC".to_string(),
+                name: "Neap Apps".to_string(),
+                symbol: "NAPP".to_string(),
                 icon: None,
                 base_uri: Some("https://ipfs.fleek.co/ipfs".to_string()),
                 reference: None,
@@ -122,13 +119,12 @@ impl NftContract {
             total_supply: 0,
         }
     }
-    pub fn nft_transfer_unsafe(
+    pub(crate) fn nft_transfer_unsafe(
         &mut self,
         token_id: &TokenId,
         owner_id: &AccountId,
         receiver_id: &AccountId,
     ) {
-        assert_self();
         self.token
             .internal_transfer_unguarded(token_id, owner_id, receiver_id);
         env::log(
@@ -143,6 +139,21 @@ impl NftContract {
             .to_string()
             .as_bytes(),
         );
+    }
+
+     pub(crate) fn internal_remove_token(&mut self,token_id:&TokenId, owner_id:&AccountId){
+        
+        if let Some(tokens_per_owner) = &mut self.token.tokens_per_owner {
+            let mut token_ids = tokens_per_owner.get(&owner_id).unwrap();
+            token_ids.remove(&token_id);
+            tokens_per_owner.insert(&owner_id, &token_ids);
+        }
+        
+        self.token.owner_by_id.remove(&token_id);
+
+        if let Some(token_metadata_by_id) = &mut self.token.token_metadata_by_id {
+            token_metadata_by_id.remove(&token_id);
+        }
     }
 }
 

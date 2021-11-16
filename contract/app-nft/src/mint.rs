@@ -1,5 +1,6 @@
 use crate::*;
 use near_sdk::collections::UnorderedSet;
+use near_sdk::json_types::U64;
 #[near_bindgen]
 impl NftContract {
     #[payable]
@@ -11,59 +12,29 @@ impl NftContract {
     ) -> TokenId {
         self.assert_owner();
         let token = self.token.mint(token_id, receiver_id, Some(metadata));
-        self.total_supply +=1;
-
+        
         token.token_id
     }
-
-    fn nft_create_series(
+    #[payable]
+    pub fn nft_create_series(
         &mut self,
         series_id: NftSeriesId,
         token_metadata: TokenMetadata,
         price: Option<Balance>,
-        royalty: Option<HashMap<AccountId, u32>>,
     ) -> NftSeriesJson {
         let initial_storage_usage = env::storage_usage();
         let creator_id = env::predecessor_account_id();
 
         assert!(
             self.token_series.get(&series_id).is_none(),
-            "NearNftComponent: duplicate series_id"
+            "Near Apps: duplicate series_id"
         );
 
         let title = token_metadata.title.clone();
         assert!(
             title.is_some(),
-            "NearNftComponent: token_metadata.title is required"
+            "Near Apps: token_metadata.title is required"
         );
-
-        let mut total = 0;
-        let mut total_accounts = 0;
-        let royalty_res = if let Some(royalty) = royalty {
-            for (_, v) in royalty.iter() {
-                total += *v;
-                total_accounts += 1;
-            }
-            royalty
-        } else {
-            HashMap::new()
-        };
-
-        assert!(
-            total_accounts <= 10,
-            "Near Apps: royalty exceeds 10 accounts"
-        );
-
-        assert!(
-            total <= 9000,
-            "Near Apps Exceeds maximum royalty -> 9000",
-        );
-
-        let price_res: Option<u128> = if price.is_some() {
-            Some(price.unwrap())
-        } else {
-            None
-        };
 
         self.token_series.insert(
             &series_id,
@@ -79,9 +50,8 @@ impl NftContract {
                     .unwrap(),
                 ),
                 closed: false,
-                price: price_res,
+                price: price,
                 is_mintable: true,
-                royalty: royalty_res.clone(),
             },
         );
 
@@ -93,7 +63,6 @@ impl NftContract {
                     "token_metadata": token_metadata,
                     "creator_id": creator_id,
                     "price": price,
-                    "royalty": royalty_res
                 }
             })
             .to_string()
@@ -106,16 +75,18 @@ impl NftContract {
             series_id,
             metadata: token_metadata,
             creator_id: creator_id.into(),
-            royalty: royalty_res,
         }
     }
 
     fn nft_mint_series_internal(
-        &mut self, 
-        token_series_id: NftSeriesId, 
-        receiver_id: ValidAccountId
+        &mut self,
+        token_series_id: NftSeriesId,
+        receiver_id: ValidAccountId,
     ) -> TokenId {
-        let mut token_series = self.token_series.get(&token_series_id).expect("Near Apps: Token series not exist");
+        let mut token_series = self
+            .token_series
+            .get(&token_series_id)
+            .expect("Near Apps: Token series not exist");
         assert!(
             token_series.is_mintable,
             "Near Apps: Token series is not mintable"
@@ -135,23 +106,148 @@ impl NftContract {
 
         // you can add custom metadata to each token here
         let metadata = Some(TokenMetadata {
-            title: None,          // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
-            description: None,    // free-form description
+            title: None,       // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
+            description: None, // free-form description
             media: None, // URL to associated media, preferably to decentralized, content-addressed storage
             media_hash: None, // Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
             copies: None, // number of copies of this set of metadata in existence when token was minted.
             issued_at: Some(env::block_timestamp().to_string()), // ISO 8601 datetime when token was issued or minted
-            expires_at: None, // ISO 8601 datetime when token expires
-            starts_at: None, // ISO 8601 datetime when token starts being valid
-            updated_at: None, // ISO 8601 datetime when token was last updated
+            expires_at: None,     // ISO 8601 datetime when token expires
+            starts_at: None,      // ISO 8601 datetime when token starts being valid
+            updated_at: None,     // ISO 8601 datetime when token was last updated
             extra: None, // anything extra the NFT wants to store on-chain. Can be stringified JSON.
             reference: None, // URL to an off-chain JSON file with more info.
             reference_hash: None, // Base64-encoded sha256 hash of JSON from reference field. Required if `reference` is included.
         });
 
-        //let token = 
+        //let token =
         self.token.mint(token_id.clone(), receiver_id, metadata);
+        token_id
+    }
+
+    #[payable]
+    pub fn nft_set_series_non_mintable(&mut self, token_series_id: NftSeriesId) {
+        assert_one_yocto();
+
+        let mut token_series = self
+            .token_series
+            .get(&token_series_id)
+            .expect("Token series not exist");
+        assert_eq!(
+            env::predecessor_account_id(),
+            token_series.creator_id,
+            "Near Apps: Creator only"
+        );
+
+        assert_eq!(
+            token_series.is_mintable, true,
+            "Near Apps: already non-mintable"
+        );
+
+        assert_eq!(
+            token_series.metadata.copies, None,
+            "Near Apps: decrease supply if copies not null"
+        );
+
+        token_series.is_mintable = false;
+        self.token_series.insert(&token_series_id, &token_series);
+        env::log(
+            json!({
+                "type": "nft_set_series_non_mintable",
+                "params": {
+                    "token_series_id": token_series_id,
+                }
+            })
+            .to_string()
+            .as_bytes(),
+        );
+    }
+
+    #[payable]
+    pub fn nft_decrease_series_copies(
+        &mut self,
+        token_series_id: NftSeriesId,
+        decrease_copies: U64,
+    ) -> U64 {
+        assert_one_yocto();
+
+        let mut token_series = self
+            .token_series
+            .get(&token_series_id)
+            .expect("Token series not exist");
+        assert_eq!(
+            env::predecessor_account_id(),
+            token_series.creator_id,
+            "Near Apps: Creator only"
+        );
+
+        let minted_copies = token_series.tokens.len();
+        let copies = token_series.metadata.copies.unwrap();
+
+        assert!(
+            (copies - decrease_copies.0) >= minted_copies,
+            "Near Apps: cannot decrease supply, already minted : {}",
+            minted_copies
+        );
+
+        let is_non_mintable = if (copies - decrease_copies.0) == minted_copies {
+            token_series.is_mintable = false;
+            true
+        } else {
+            false
+        };
+
+        token_series.metadata.copies = Some(copies - decrease_copies.0);
+
+        self.token_series.insert(&token_series_id, &token_series);
+        env::log(
+            json!({
+                "type": "nft_decrease_series_copies",
+                "params": {
+                    "token_series_id": token_series_id,
+                    "copies": U64::from(token_series.metadata.copies.unwrap()),
+                    "is_non_mintable": is_non_mintable,
+                }
+            })
+            .to_string()
+            .as_bytes(),
+        );
+        U64::from(token_series.metadata.copies.unwrap())
+    }
+
+    #[payable]
+    pub fn nft_mint_series(
+        &mut self,
+        series_id: NftSeriesId,
+        receiver_id: ValidAccountId,
+    ) -> TokenId {
+        let initial_storage_usage = env::storage_usage();
+
+        let token_series = self
+            .token_series
+            .get(&series_id)
+            .expect("Near Apps: Token series not exist");
+        assert_eq!(
+            env::predecessor_account_id(),
+            token_series.creator_id,
+            "Near Apps: not creator"
+        );
+        let token_id: TokenId = self.nft_mint_series_internal(series_id, receiver_id.clone());
         
+        refund_deposit(env::storage_usage() - initial_storage_usage, 0);
+        env::log(
+            json!({
+                "type": "nft_transfer",
+                "params": {
+                    "token_id": token_id.clone(),
+                    "sender_id": "",
+                    "receiver_id": receiver_id.to_string(),
+                }
+            })
+            .to_string()
+            .as_bytes(),
+        );
+
         token_id
     }
 }

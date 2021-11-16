@@ -10,4 +10,5 @@ for d in app*/;  do
     (cd "$d"; ./build.sh);
 done
 
+
 popd

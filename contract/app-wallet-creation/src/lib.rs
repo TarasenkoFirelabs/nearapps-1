@@ -37,11 +37,11 @@ pub trait ExtMakeWallets {
 #[near_bindgen]
 impl MakeWallets {
     #[payable]
-    pub fn make_wallets(new_account: NewAccount) -> Promise {
+    pub fn make_wallet(network: String, new_account: NewAccount) -> Promise {
         //todo remove
         env::log_str(&format!("balance is: {}", env::account_balance()));
 
-        Promise::new("near".parse().unwrap()).function_call(
+        Promise::new(network.parse().unwrap()).function_call(
                 "create_account".to_string(),
                 json!({"new_account_id": new_account.account_id.to_string(), "new_public_key": new_account.public_key}).to_string().as_bytes().to_vec(),
                 env::attached_deposit(),
