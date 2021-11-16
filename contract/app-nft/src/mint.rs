@@ -12,8 +12,7 @@ impl NftContract {
     ) -> TokenId {
         self.assert_owner();
         let token = self.token.mint(token_id, receiver_id, Some(metadata));
-        self.total_supply += 1;
-
+        
         token.token_id
     }
     #[payable]

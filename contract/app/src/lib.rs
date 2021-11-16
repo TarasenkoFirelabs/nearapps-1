@@ -1,7 +1,7 @@
 //! Some js examples will be here.
 
 use std::collections::HashMap;
-use std::convert::{TryFrom, TryInto};
+use std::convert::{TryFrom, TryInto,Into};
 use std::str;
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};

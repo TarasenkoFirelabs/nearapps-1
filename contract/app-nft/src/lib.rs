@@ -140,6 +140,21 @@ impl NftContract {
             .as_bytes(),
         );
     }
+
+     pub(crate) fn internal_remove_token(&mut self,token_id:&TokenId, owner_id:&AccountId){
+        
+        if let Some(tokens_per_owner) = &mut self.token.tokens_per_owner {
+            let mut token_ids = tokens_per_owner.get(&owner_id).unwrap();
+            token_ids.remove(&token_id);
+            tokens_per_owner.insert(&owner_id, &token_ids);
+        }
+        
+        self.token.owner_by_id.remove(&token_id);
+
+        if let Some(token_metadata_by_id) = &mut self.token.token_metadata_by_id {
+            token_metadata_by_id.remove(&token_id);
+        }
+    }
 }
 
 near_contract_standards::impl_non_fungible_token_core!(NftContract, token);
