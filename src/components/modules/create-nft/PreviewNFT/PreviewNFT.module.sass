@@ -1,0 +1,94 @@
+@import "../../../../../styles/mixins/texts"
+@import "../../../../../styles/mixins/positions"
+
+.headerBlock
+  @include textHeader
+  @include flexInlineCenter
+  padding: 10px 10px 0
+  width: 300px
+  margin: 0 auto
+
+  @media only screen and (max-width: 600px)
+    width: 100%
+
+.cancelFab
+  flex-basis: 25%
+  text-align: right
+  @media only screen and (max-width: 600px)
+    padding: 0 10px 0 0
+
+.backFab
+  flex-basis: 25%
+  text-align: left
+  @media only screen and (max-width: 600px)
+    padding: 0 0 0 10px
+
+.horizontalLine1
+  width: 335px
+  @media only screen and (max-width: 600px)
+    width: 100%
+
+.imagePreviewBlock
+  padding: 19px 0
+  display: flex
+  flex-direction: column
+  margin: 30px auto 0
+  max-height: 527px
+  width: 349px
+  border: 1px solid #DEDEDE
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.04)
+  box-sizing: border-box
+  border-radius: 10px
+
+  & .blockPreview
+    @include textLabel-13
+    position: absolute
+    margin: 10px 33px
+    display: flex
+    align-items: center
+    justify-content: center
+    height: 30px
+    width: 79px
+    border-radius: 6px
+    z-index: 1
+    color: white
+    background-color: #39C0BA
+
+  & .subHeaderBlock
+    @include textHeader
+    justify-content: right
+    padding: 35px 0 0
+    width: 300px
+    margin: 0 auto
+
+    @media only screen and (max-width: 600px)
+      padding: 35px 22px 0
+      width: 100%
+
+  & .chipsBlock
+    @include textSubBody-14
+    @include flexInlineCenter
+    margin: 10px 13px 0
+    width: 94px
+    height: 34px
+    border-radius: 50px
+    background-color: #EDEBEB
+
+  & .descriptionBlock
+    padding: 19px 19px 0
+    justify-content: right
+    word-break: break-word
+    overflow-y: auto
+
+.profileInfoBlock
+  display: flex
+  padding: 17px 17px 0
+
+  & .profileContent
+    display: flex
+    flex-direction: column
+    padding: 0 15px
+
+.mintBtn
+  width: 345px
+  border-radius: 8px

@@ -1,0 +1,56 @@
+@import "../../../../../styles/mixins/texts"
+@import "../../../../../styles/mixins/positions"
+
+.headerBlock
+  @include textHeader
+  @include flexInlineCenter
+  padding: 10px 10px 0
+  width: 300px
+  margin: 0 auto
+
+  @media only screen and (max-width: 600px)
+    width: 100%
+
+
+.cancelFab
+  flex-basis: 25%
+  text-align: right
+  @media only screen and (max-width: 600px)
+    padding: 0 10px 0 0
+
+
+.inputLabel
+  @include textSubHeader
+  margin: 0 auto
+  padding: 25px 0 17px
+  width: 335px
+  @media only screen and (max-width: 600px)
+    padding: 25px 0 17px 22px
+    width: 100%
+
+.horizontalLine1
+  width: 335px
+  @media only screen and (max-width: 600px)
+    width: 100%
+
+.propertiesBlock
+  @include textSubBody-12
+  @include flexColumnCenter
+  padding: 25px 0 0 0
+
+  & .outInput
+    margin: 5px
+    width: 163px
+    border: 0
+    @media only screen and (max-width: 600px)
+      width: 165px
+
+.nextButtonBlock
+  @include flexInlineCenter
+  padding: 23px 0 0 0
+  text-align: right
+
+  & .nextButton
+    width: 83px
+    height: 45px
+    border-radius: 8px
