@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const program = require("commander");
 const { prompt } = require("inquirer");
-const { deploy } = require("./index");
+const { deployAll } = require("./deploy");
 
 
 program.version("1.0.0").alias("v").description("Near Apps Sdk")
@@ -19,7 +19,7 @@ program
   .alias("d")
   .description("deploy contracts")
   .action(() => {
-    prompt(questions).then((answers) => deploy(answers));
+    prompt(questions).then((answers) => deployAll(answers));
   });
 
 program.parse(process.argv);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start":"npm link && clear && napp help",
+    "start": "npm link && clear && napp help",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "preferGlobal": true,
@@ -14,6 +14,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
-    "inquirer": "^8.2.0"
+    "inquirer": "^8.2.0",
+    "near-api-js": "^0.43.1"
   }
 }
