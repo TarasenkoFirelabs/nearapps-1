@@ -27,6 +27,7 @@ const deployAll = (resp) => {
   if (resp.answer == "y") {
     console.log(chalk.bgGray("Deploying contracts... "));
     deployContract(ACCOUNT_ID, WASM_PATH);
+    console.log(chalk.bgGray("Deploying succeeded... "));
   }
 };
 
