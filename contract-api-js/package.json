@@ -4,6 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "build": "set -e & cd ../contract && ./do-build.sh",
+    "postbuild": "cp ../contract/target/wasm32-unknown-unknown/release/*.wasm res/",
     "start": "npm link && clear && napp help",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

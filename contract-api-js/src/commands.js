@@ -4,7 +4,7 @@ const { prompt } = require("inquirer");
 const { deployAll } = require("./deploy");
 
 
-program.version("1.0.0").alias("v").description("Near Apps Sdk")
+program.version("1.0.0").alias("v").description("Near Apps Api-Js")
 
 
 const questions = [
