@@ -6,7 +6,7 @@ const homedir = require("os").homedir();
 
 const CREDENTIALS_DIR = ".near-credentials";
 const ACCOUNT_ID = "near-example.testnet";
-const WASM_PATH = path.join(__dirname, "/res/app.wasm");
+const WASM_PATH = path.join(__dirname, "../res/app.wasm");
 const credentialsPath = path.join(homedir, CREDENTIALS_DIR);
 const keyStore = new keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
 
