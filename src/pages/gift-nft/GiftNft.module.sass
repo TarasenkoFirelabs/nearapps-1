@@ -1,0 +1,28 @@
+@import "styles/mixins/_texts.sass"
+@import "styles/mixins/_positions.sass"
+
+.root
+  background-color: black
+  padding: 35px 0 0
+  z-index: 0
+
+.baseBody
+  background-color: white
+  border-radius: 20px 20px 0 0
+  height: 100vh
+
+  & .headerBlock
+    @include textHeader
+    @include flexInlineCenter
+    padding: 10px 10px 0
+    width: 300px
+    margin: 0 auto
+
+    @media only screen and (max-width: 600px)
+      width: 100%
+
+    & .cancelFab
+      flex-basis: 25%
+      text-align: right
+      @media only screen and (max-width: 600px)
+        padding: 0 10px 0 0
