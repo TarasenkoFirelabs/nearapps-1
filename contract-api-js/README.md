@@ -2,8 +2,8 @@
 
 1. Install dependencies
 
-       npm install
+       yarn install
 
 2. Start examples demo:
 
-       npm start
+       yarn start
