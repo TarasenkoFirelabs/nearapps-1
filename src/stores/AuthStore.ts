@@ -1,44 +1,49 @@
 import * as nearAPI from "near-api-js";
 import { makeObservable } from 'mobx';
-import { ConnectConfig, Near } from "near-api-js";
-import { Config } from "./Config";
+import getContractsConfig from "../full-config";
 import { formatNearAmount } from "near-api-js/lib/utils/format";
+import { Contract, Near } from "near-api-js";
+import {Account} from "near-api-js/lib/account";
 import Storage from "./Storage";
 
-
-
-const {
-    FUNDING_DATA,
-    FUNDING_DATA_BACKUP,
-    ACCOUNT_LINKS,
-    GAS,
-    SEED_PHRASE_LOCAL_COPY,
-    networkId,
-    nodeUrl,
-    walletUrl,
-    nameSuffix,
-    contractName
-} = Config;
-console.log(networkId);
 enum Locals {
     ACCESS_TOKEN = 'access_token',
     REFRESH_TOKEN = 'refresh_token',
     CURRENT_USER_EMAIL = 'current_user_email',
     CURRENT_USER_PHONE = 'current_user_phone'
-  }
+}
+
+export type UserType = {
+    accountId?: string,
+    balance?: string,
+    account?: Account
+}
+
+export type NearConfig = {
+    networkId: string,
+    nodeUrl: string,
+    contractName: string,
+    walletUrl: string,
+    helperUrl: string
+}
+
+// @ts-ignore
+console.log('process.env.NEXT_PUBLIC_NODE_ENV', process.env.NEXT_PUBLIC_NODE_ENV);
 
 class Auth extends Storage<Locals> {
     near: null | Near = null;
     wallet: null | nearAPI.WalletConnection = null;
-    // networkId: null | ConnectConfig = null;
-    // nodeUrl: null | string = null;
-    // walletUrl: null | string = null;
+    contract: null | Contract = null;
     signedIn: boolean = false;
     balance: string = '';
 
+    // networkId: null | ConnectConfig = null;
+    // nodeUrl: null | string = null;
+    // walletUrl: null | string = null;
+
     logged: boolean = false;
     token: string = '';
-    currentUser: null | Object = null;
+    currentUser: null | UserType = null;
     processing: boolean  = false;
 
     private static instance?: Auth;
@@ -48,25 +53,47 @@ class Auth extends Storage<Locals> {
         makeObservable(this, {});
     }
 
+    private env: string = process.env.NEXT_PUBLIC_NODE_ENV || 'testnet';
+    nearConfig = getContractsConfig(this.env);
+
     tryToConnect = async () => {
         this.near = await nearAPI.connect({
-            networkId, nodeUrl, walletUrl, deps: { keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore() },
+            networkId: this.nearConfig.networkId,
+            nodeUrl: this.nearConfig.nodeUrl,
+            walletUrl: this.nearConfig.walletUrl,
+            deps: { keyStore: new nearAPI.keyStores.BrowserLocalStorageKeyStore() },
         });
 
         // Needed to access wallet
         this.wallet = new nearAPI.WalletConnection(this.near, null);
 
         this.signedIn = this.wallet.isSignedIn()
-        if(this.signedIn) {
-            this.balance = formatNearAmount((await this.wallet.account().getAccountBalance()).available, 2)
+        if (this.signedIn) {
+            this.currentUser = {
+                accountId: this.wallet.getAccountId(),
+                balance: formatNearAmount((await this.wallet.account().getAccountBalance()).available, 2)
+            }   //(await walletConnection.account().state()).amount / Math.pow(10, 24)
+
+            this.currentUser.account = await this.near.account(this.wallet.getAccountId());
+
+            // Initializing our contract APIs by contract name and configuration
+            this.contract = new nearAPI.Contract(this.wallet.account(), this.nearConfig.contractName, {
+                // View methods are read-only – they don't modify the state, but usually return some value
+                viewMethods: [],
+                // Change methods can modify the state, but you don't receive the returned value when called
+                changeMethods: ['call', 'make_wallet', 'log_analytics'],
+                // Sender is the account ID to initialize transactions.
+                // @ts-ignore-next-line
+                sender: this.currentUser.accountId
+            });
         }
 
-        return this.wallet
+        return this
     }
 
     signIn = (successRedirectUrl: string, failedRedirectUrl: string) => {
         if (this.wallet) { 
-            this.wallet.requestSignIn(contractName, 'Blah Blah', successRedirectUrl, failedRedirectUrl);
+            this.wallet.requestSignIn(this.nearConfig.contractName, 'Blah Blah', successRedirectUrl, failedRedirectUrl);
         }
     }
         

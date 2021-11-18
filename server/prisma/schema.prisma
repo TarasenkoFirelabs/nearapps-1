@@ -10,14 +10,23 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Role {
-  USER
-  ADMIN
+model FrontApp {
+  id      Int     @id @default(autoincrement())
+  name    String  @unique
+  api_key String  @unique
+
 }
 
 //----------------------------------------------------------------------------------------
 // from start we should register (seed) admin account like initial owner of all NFTs
 //----------------------------------------------------------------------------------------
+// Raf@near.org
+
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id    Int     @id @default(autoincrement())
   name   String  @unique
@@ -37,35 +46,36 @@ model Wallet {
   userId      Int
 }
 
+model NftSeries {
+  id             Int     @id @default(autoincrement())
+  series_name    String  @unique
+  quantity       Int
+  Nfts           Nft[]
+}
+
 enum Status {
-  NEW
+  MINTED
   SENT
   RECEIVED
 }
 
-model NftSeries {
-  id             Int     @id @default(autoincrement())
-  series_name    String  @unique
-  Nfts           Nft[]
-}
-
 model Nft {
   id          Int     @id @default(autoincrement())
-    series_name String  @unique
   filename    String
   title       String
   description String
   size        Int
 
-  status      Status  @default(NEW)
+  series      NftSeries @relation(fields: [seriesId], references: [id])
+  seriesId    Int
 
-  creator       User    @relation(fields: [userId], references: [id])
-  userId      Int
+  status      Status    @default(NEW)
 
-  owner       User    @relation(fields: [userId], references: [id])
-  userId      Int
+  creator     User      @relation(fields: [creatorId], references: [id])
+  walletId    Int
 
-
+  owner       User      @relation(fields: [ownerId], references: [id])
+  ownerId     Int
 }
 
 enum Status {
@@ -76,10 +86,7 @@ enum Status {
 
 model NftMint {
   id          Int     @id @default(autoincrement())
-  filename    String
-  title       String
-  description String
-  size        Int
+  nftId       Int
   status      Status  @default(NEW)
   owner       User    @relation(fields: [userId], references: [id])
   userId      Int
