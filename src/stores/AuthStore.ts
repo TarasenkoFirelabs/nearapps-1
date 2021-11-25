@@ -11,7 +11,7 @@ enum Locals {
     REFRESH_TOKEN = 'refresh_token',
     CURRENT_USER_EMAIL = 'current_user_email',
     CURRENT_USER_PHONE = 'current_user_phone'
-}
+  }
 
 export type UserType = {
     accountId?: string,
@@ -33,7 +33,7 @@ console.log('process.env.NEXT_PUBLIC_NODE_ENV', process.env.NEXT_PUBLIC_NODE_ENV
 class Auth extends Storage<Locals> {
     near: null | Near = null;
     wallet: null | nearAPI.WalletConnection = null;
-    contract: null | Contract = null;
+    contract: Contract = null;
     signedIn: boolean = false;
     balance: string = '';
 
@@ -74,7 +74,7 @@ class Auth extends Storage<Locals> {
                 balance: formatNearAmount((await this.wallet.account().getAccountBalance()).available, 2)
             }   //(await walletConnection.account().state()).amount / Math.pow(10, 24)
 
-            this.currentUser.account = await this.near.account(this.wallet.getAccountId());
+            this.currentUser.account = await this.near.account(this.currentUser.accountId);
 
             // Initializing our contract APIs by contract name and configuration
             this.contract = new nearAPI.Contract(this.wallet.account(), this.nearConfig.contractName, {

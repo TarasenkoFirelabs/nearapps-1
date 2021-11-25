@@ -10,17 +10,24 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model FrontApp {
-  id      Int     @id @default(autoincrement())
-  name    String  @unique
-  api_key String  @unique
+enum Activity {
+  ACTIVE
+  BLOCKED
+}
 
+model FrontApp {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  api_key    String    @unique
+  active     Boolean   @default(ACTIVE)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now())
 }
 
 //----------------------------------------------------------------------------------------
 // from start we should register (seed) admin account like initial owner of all NFTs
 //----------------------------------------------------------------------------------------
-// Raf@near.org
+// Ross@near.org
 
 enum Role {
   USER
@@ -28,29 +35,40 @@ enum Role {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name   String  @unique
-  email  String  @unique
-  phone  String  @unique
-  role   Role    @default(USER)
-  NearWallets    Wallet[]
-  Nfts           Nft[]
+  id           Int       @id @default(autoincrement())
+  name         String    @unique
+  email        String    @unique
+  phone        String    @unique
+  role         Role      @default(USER)
+
+  frontApp     FrontApp  @relation(fields: [frontId], references: [id])
+  frontId      Int
+
+  NearWallets  Wallet[]
+  Nfts         Nft[]
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
 }
 
 model Wallet {
-  id          Int     @id @default(autoincrement())
-  wallet      String  @unique
-  public_key  String  @unique
-  seed_phrase String  @unique
-  user        User    @relation(fields: [userId], references: [id])
-  userId      Int
+  id           Int       @id @default(autoincrement())
+  wallet       String    @unique
+  public_key   String    @unique
+  seed_phrase  String    @unique
+  user         User      @relation(fields: [userId], references: [id])
+  userId       Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
 }
 
 model NftSeries {
-  id             Int     @id @default(autoincrement())
-  series_name    String  @unique
-  quantity       Int
-  Nfts           Nft[]
+  id           Int       @id @default(autoincrement())
+  series_name  String    @unique
+  quantity     Int
+  Nfts         Nft[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
 }
 
 enum Status {
@@ -60,47 +78,35 @@ enum Status {
 }
 
 model Nft {
-  id          Int     @id @default(autoincrement())
-  filename    String
-  title       String
-  description String
-  size        Int
+  id           Int       @id @default(autoincrement())
+  filename     String
+  title        String
+  description  String
+  size         Int
+  status       Status    @default(MINTED)
+  token        String    @unique
 
-  series      NftSeries @relation(fields: [seriesId], references: [id])
-  seriesId    Int
+  series       NftSeries @relation(fields: [seriesId], references: [id])
+  seriesId     Int
 
-  status      Status    @default(NEW)
+  creator      Wallet    @relation(fields: [walletId], references: [id])
+  walletId     Int
 
-  creator     User      @relation(fields: [creatorId], references: [id])
-  walletId    Int
+  owner        Wallet    @relation(fields: [ownerId], references: [id])
+  ownerWId     Int
 
-  owner       User      @relation(fields: [ownerId], references: [id])
-  ownerId     Int
-}
-
-enum Status {
-  NEW
-  SENT
-  RECEIVED
-}
-
-model NftMint {
-  id          Int     @id @default(autoincrement())
-  nftId       Int
-  status      Status  @default(NEW)
-  owner       User    @relation(fields: [userId], references: [id])
-  userId      Int
-  nftId       Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
 }
 
 model NftLog {
-  id          Int     @id @default(autoincrement())
-  nft         Nft     @relation(fields: [nftId], references: [id])
-  nftId       Int
+  id           Int       @id @default(autoincrement())
+  nft          Nft       @relation(fields: [nftId], references: [id])
+  nftId        Int
 
-  date        DateTime
-
-  status      Status  @default(NEW)
-  owner       User    @relation(fields: [userId], references: [id])
-  userId      Int
+  status       Status    @default(MINTED)
+  status_was   Status
+  owner        Wallet    @relation(fields: [ownerId], references: [id])
+  ownerWId     Int
+  createdAt    DateTime  @default(now())
 }

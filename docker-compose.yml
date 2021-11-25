@@ -7,14 +7,14 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - pg
+      - postgres
 
-  pg:
+  postgres:
     image: "postgres"
     env_file:
       - database.env
     volumes:
-      - database-data:/var/lib/postgresql/data/
+      - postgres-data:/var/lib/postgresql/data/
 
   # mongodb:
   #   image: mongo:latest
@@ -30,4 +30,4 @@ services:
   #   command: mongod --bind_ip_all --smallfiles --logpath=/dev/null # --quiet
 
 volumes:
-  database-data:
+  postgres-data:
